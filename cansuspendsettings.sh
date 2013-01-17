@@ -5,13 +5,22 @@ IDLETIMEOUT=600
 CPULOWLIMIT=400
 #Network lower limit to trigger suspend (kB/s) 
 NETLOWLIMIT=20
+#Difference in screenshots lower limit (percent)
+SCREENDIFFLIMIT=10
+#Sound output lower limit (tenths of percent , 1000 is max)
+AUDIOLOWLIMIT=2
+
+
+
+#Number of seconds to sleep before recheck for suspend criteria
+SLEEPTIME=6
 #Weight given to new readings in the moving average (percent)
 NEWREADINGWEIGHT=40
-#Difference in screenshots lower limit (n pixels)
-SCREENDIFFLIMIT=200000
-#Sound output lower limit (??? units)
-AUDIOLOWLIMIT=2
-#Number of seconds to sleep before recheck for suspend criteria
-SLEEPTIME=60
+#Pixel area to resize screenshots to
+SCREENAREA=500000
+#Network card to read data throughput from
+NETCARD=em1
+#Audio Source to read from
+SOUNDCARD=alsa_output.pci-0000_00_1b.0.analog-stereo.monitor
 
 export IDLETIMEOUT CPULOWLIMIT NETLOWLIMIT NEWREADINGWEIGHT SCREENDIFFLIMIT AUDIOLOWLIMIT SLEEPTIME
