@@ -7,6 +7,7 @@ echo "[POWERON]================="$DATE"=================" >> $DIR/cansuspend.log
 CPUAVE=1000
 NETAVE=30
 AUDIOAVE=10
+SCREENDIFFTIME=0
 RX=$(ifconfig $NETCARD|grep 'RX packets'|cut -d' ' -f14)
 TX=$(ifconfig $NETCARD|grep 'TX packets'|cut -d' ' -f14)
 while [ "1" ]
@@ -61,6 +62,16 @@ do
 	# echo "   No suspend occurring, activity or cpu use too high" >> $DIR/cansuspend.log
 	# echo "   "$IDLETIME" : "$CPUAVE >> $DIR/cansuspend.log
 	echo "["$TIMESTAMP"] "$IDLETIME" s : "$((CPUAVE/10))" % ("$((CPU/10))") : "$((NETAVE/SLEEPTIME))" kB/s ("$((NET/SLEEPTIME))") : "$SCREENDIFF" px : "$SCRDIFFPERCENT" % : "$AUDIOAVE" 1000ths ("$AUDIOVOLUME")" >> $DIR/cansuspend.log
+	if [ $SCREENDIFF -lt $SCREENDIFFLIMIT ]
+	then
+		SCREENDIFFTIME=$(($SCREENDIFFTIME+60))		
+		if [ $SCREENDIFFTIME -gt $MONITORTIMEOUT ]
+   		then
+			echo " dpms suspend" >> $DIR/cansuspend.log
+			SCREENDIFFTIME=0
+			xset dpms force standby
+		fi
+	fi
  fi
  sleep $SLEEPTIME
 done

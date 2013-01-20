@@ -9,11 +9,12 @@ NETLOWLIMIT=20
 SCREENDIFFLIMIT=10
 #Sound output lower limit (tenths of percent , 1000 is max)
 AUDIOLOWLIMIT=2
-
+#Monitor timeout (seconds)
+MONITORTIMEOUT=60
 
 
 #Number of seconds to sleep before recheck for suspend criteria
-SLEEPTIME=6
+SLEEPTIME=600
 #Weight given to new readings in the moving average (percent)
 NEWREADINGWEIGHT=40
 #Pixel area to resize screenshots to
@@ -21,6 +22,6 @@ SCREENAREA=500000
 #Network card to read data throughput from
 NETCARD=em1
 #Audio Source to read from
-SOUNDCARD=alsa_output.pci-0000_00_1b.0.analog-stereo.monitor
+SOUNDCARD= alsa_output.pci-0000_00_1b.0.analog-stereo.monitor
 
 export IDLETIMEOUT CPULOWLIMIT NETLOWLIMIT NEWREADINGWEIGHT SCREENDIFFLIMIT AUDIOLOWLIMIT SLEEPTIME
