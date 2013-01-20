@@ -6,6 +6,7 @@ written by: Jesse Lovitt
 
 import subprocess
 import os
+from os.path import expanduser
 
 if __name__ == "__main__":
 	#Get network interface names and addresses
@@ -33,7 +34,7 @@ if __name__ == "__main__":
 		elif curr_chan != "":
 			line_c = line.lstrip().split(":")
 			if line_c[0] == "Name":
-				channels[curr_chan][0] = line_c[1]
+				channels[curr_chan][0] = line_c[1].lstrip()
 			elif line_c[0] == "Description":
 				channels[curr_chan][1] = line_c[1]
 			
@@ -60,7 +61,8 @@ if __name__ == "__main__":
 		snd = channels.values()[0][0] 
 
 	#Write settings to disk
-	fn = os.path.normpath(os.path.join(os.path.realpath(__file__),"..","cansuspendsettings.sh"))	
+	suspendpath = os.path.normpath(os.path.join(os.path.realpath(__file__),".."))	
+	fn = os.path.join(suspendpath,"cansuspendsettings.sh")	
 	fh = open(fn,"r")
 	settings = fh.readlines()
 	for i,line in enumerate(settings):
@@ -72,6 +74,21 @@ if __name__ == "__main__":
 	fh.writelines(settings)
 	print "" 
 	print "Settings written to ", fn
+
+	#Add startup line to .bash_profile
+	home = expanduser("~")
+	fn = os.path.join(home,".bash_profile")
+	fh = open(fn, "r")
+	profile = fh.readlines()
+	start_found = False
+	for line in profile:
+		if "cansuspend" in line:
+			start_found = True
+	if not start_found:
+		fh = open(fn, "a")
+		fh.writelines(["#Start the smart suspend script\n",os.path.join(suspendpath,"cansuspend") + " &> "+os.path.join(suspendpath,"cansuspenderror.log")+" &"])
+		print "Startup line written to .bash_profile"
+
 	
 	
 
