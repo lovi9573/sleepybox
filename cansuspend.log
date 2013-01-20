@@ -19,3 +19,64 @@
 [01/19/2013 08:53:11 PM] 0 s : 18 % (16) : 1 kB/s (1) : 282376 px : 56 % : 0 1000ths (0)
 [01/19/2013 08:54:19 PM] 0 s : 14 % (8) : 0 kB/s (0) : 66533 px : 13 % : 0 1000ths (0)
 [01/19/2013 08:55:25 PM] 0 s : 10 % (4) : 0 kB/s (0) : 15527 px : 3 % : 0 1000ths (0)
+[01/19/2013 08:56:33 PM] 0 s : 7 % (3) : 0 kB/s (0) : 36994 px : 7 % : 0 1000ths (0)
+[01/19/2013 08:57:41 PM] 2 s : 7 % (6) : 3 kB/s (7) : 261342 px : 52 % : 0 1000ths (0)
+[01/19/2013 08:58:46 PM]-------Suspending due to inactivity and low cpu usage [ 70 : 6 : 117 : 0 : 0 ]
+	USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+	root       782  0.8  2.1 251296 85596 tty1     Ssl+ Jan13  71:08 /usr/bin/Xorg :0 -background none -logverbose 7 -auth /var/run/gdm/auth-for-gdm-GNsO95/database -seat seat0 -nolisten tcp vt1
+	user       975  0.0  0.0 438728  1176 ?        Sl   Jan13   0:00 /usr/bin/gnome-keyring-daemon --daemonize --login
+	user       979  0.0  0.0 497180  2744 ?        Ssl  Jan13   0:02 gnome-session
+	user       994  0.0  0.0  20216   160 ?        S    Jan13   0:00 dbus-launch --sh-syntax --exit-with-session
+	user       995  0.0  0.0  33036  2408 ?        Ssl  Jan13   0:09 /bin/dbus-daemon --fork --print-pid 5 --print-address 7 --session
+	user      1057  0.0  0.0 321536   824 ?        Sl   Jan13   0:00 /usr/libexec/imsettings-daemon
+	user      1060  0.0  0.0 159040  1084 ?        S    Jan13   0:00 /usr/libexec/gvfsd
+	user      1062  0.0  0.0 645020  1476 ?        Sl   Jan13   0:03 /usr/libexec//gvfs-fuse-daemon -f /run/user/user/gvfs
+	user      1067  0.0  0.0  40984   708 ?        S    Jan13   0:00 /usr/lib64/xfce4/xfconf/xfconfd
+	user      1146  0.0  0.0 114196   940 ?        S    Jan13   0:19 -/bin/bash -c gnome-session
+	user      1201  0.0  0.1 549508  5408 ?        Sl   Jan13   2:38 /usr/bin/pulseaudio --start --log-target=syslog
+	user      1319  0.0  0.0 146296  1116 ?        S    Jan13   0:00 /usr/libexec/gconfd-2
+	user      1334  0.0  0.1 878148  7812 ?        Sl   Jan13   0:25 /usr/libexec/gnome-settings-daemon
+	user      1345  0.0  0.0 465760  1232 ?        Sl   Jan13   0:00 /usr/libexec/gsd-printer
+	user      1350  0.0  0.0 244060  2448 ?        Sl   Jan13   0:00 /usr/libexec/gvfs-udisks2-volume-monitor
+	user      1358  0.0  0.0 243860   980 ?        Sl   Jan13   0:00 /usr/libexec/gvfs-afc-volume-monitor
+	user      1361  0.0  0.0 167668  1156 ?        S    Jan13   0:00 /usr/libexec/gvfs-gphoto2-volume-monitor
+	user      1369  1.0  7.1 2027508 288048 ?      Rl   Jan13  86:38 /usr/bin/gnome-shell
+	user      1376  0.0  0.0 291016  1912 ?        Sl   Jan13   0:00 /usr/libexec/deja-dup/deja-dup-monitor
+	user      1377  0.0  0.1 699828  4904 ?        Sl   Jan13   0:01 nm-applet
+	user      1379  0.0  0.0 546772  2636 ?        Sl   Jan13   0:00 /usr/libexec/evolution/3.4/evolution-alarm-notify
+	user      1381  0.0  0.1 485052  7724 ?        Sl   Jan13   0:11 /usr/libexec/tracker-store
+	user      1383  0.0  0.1 510020  7568 ?        Sl   Jan13   0:08 gnome-screensaver
+	user      1385  0.0  0.0 422452  2500 ?        Sl   Jan13   0:00 abrt-applet
+	user      1387  0.0  0.2 616128  8632 ?        SNl  Jan13   0:04 /usr/libexec/tracker-miner-fs
+	user      1433  0.0  0.0 255764  1560 ?        Sl   Jan13   0:00 /usr/libexec/dconf-service
+	user      1436  0.0  0.0 420428  3580 ?        Sl   Jan13   1:20 zeitgeist-datahub
+	user      1440  0.0  0.1 323356  4052 ?        Sl   Jan13   0:00 /usr/bin/seapplet
+	user      1448  0.0  0.0 351252  3692 ?        Sl   Jan13   0:03 /usr/bin/zeitgeist-daemon
+	user      1457  0.0  0.0 214544  2912 ?        Sl   Jan13   0:04 /usr/libexec/zeitgeist-fts
+	user      1464  0.0  0.0 106864   156 ?        S    Jan13   0:00 /bin/cat
+	user      1484  0.0  0.0 690024  2168 ?        Sl   Jan13   0:00 /usr/libexec/evolution-calendar-factory
+	user      1492  0.0  0.0 699624  1472 ?        Sl   Jan13   0:00 /usr/libexec/evolution-addressbook-factory
+	user      1496  0.0  0.0 411268  1288 ?        Sl   Jan13   0:00 /usr/libexec/goa-daemon
+	user      1511  0.0  0.0 549680  1436 ?        Sl   Jan13   0:00 /usr/libexec/gnome-shell-calendar-server
+	user      1517  0.0  0.0 319720  2068 ?        Sl   Jan13   0:01 /usr/libexec/mission-control-5
+	user      1710  0.0  0.0 161592  1848 ?        S    Jan13   0:00 /usr/libexec/gvfsd-trash --spawner :1.4 /org/gtk/gvfs/exec_spaw/0
+	user      1713  0.0  0.0 159040   852 ?        S    Jan13   0:00 /usr/libexec/gvfsd-burn --spawner :1.4 /org/gtk/gvfs/exec_spaw/1
+	user      3310  0.0  0.7 1300396 32272 ?       Sl   Jan15   0:09 evince /home/user/Documents/compsci125.pdf
+	user      4255  1.3 16.6 2129980 674668 ?      Sl   Jan13 117:02 /usr/lib64/firefox/firefox
+	user      4282  0.0  0.0 265332   540 ?        Sl   Jan13   0:00 /usr/libexec/at-spi-bus-launcher
+	user      8520  0.6  4.5 897288 182836 ?       Sl   Jan13  55:19 /usr/lib64/xulrunner/plugin-container /usr/lib64/flash-plugin/libflashplayer.so -greomni /usr/lib64/xulrunner/omni.ja -appomni /usr/lib64/firefox/omni.ja 4255 true plugin
+	user     12268  0.0  0.0 115756  3476 pts/1    Ss+  20:53   0:00 bash
+	user     12561  0.0  0.0 115736  1200 ?        R    20:58   0:00 ps au -U 500
+	user     12562  0.0  0.0 111200   800 ?        S    20:58   0:00 sed -r s/(.*)/\t\1/
+	user     12736  0.0  1.4 1354696 57808 ?       Sl   Jan14   1:55 gedit /home/user/kaggle/Event Recommendation Engine/ppredict.py
+	user     13618  0.0  0.0 150828  1908 ?        S    Jan13   0:00 /usr/libexec/gvfsd-metadata
+	user     14756  0.0  0.4 661980 17288 ?        Sl   Jan14   0:12 gnome-terminal
+	user     14762  0.0  0.0   8412   532 ?        S    Jan14   0:00 gnome-pty-helper
+	user     14763  0.0  0.0 115756  3140 pts/0    Ss+  Jan14   0:00 bash
+	user     15006  0.0  1.0 1125492 42924 ?       Sl   Jan14   2:50 nautilus
+	user     19143  0.0  0.0 384860  2340 ?        Sl   Jan17   0:00 /usr/libexec/gvfsd-network --spawner :1.4 /org/gtk/gvfs/exec_spaw/2
+	user     19192  0.0  0.0 167532  1632 ?        S    Jan17   0:00 /usr/libexec/gvfsd-dnssd --spawner :1.4 /org/gtk/gvfs/exec_spaw/4
+	user     29910  0.0  0.7 1295260 29184 ?       Sl   Jan14   0:06 evince /home/user/Downloads/4 year plan markup(1).pdf
+	user     29915  0.0  0.0 179676  1508 ?        Sl   Jan14   0:00 /usr/libexec/evinced
+
+[01/19/2013 09:00:00 PM] 1 s : 4 % (3) : 1 kB/s (0) : 159230 px : 31 % : 0 1000ths (0)
