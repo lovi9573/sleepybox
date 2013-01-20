@@ -56,7 +56,7 @@ do
 	ps au -U 500 | sed -r 's/(.*)/\t\1/' >> $DIR/cansuspend.log
 	echo "" >> $DIR/cansuspend.log
 	#VBoxManage controlvm winXP savestate &> $DIR/cansuspenderror.log
-	sudo pm-suspend &> $DIR/cansuspenderror.log &
+	dbus-send --system --print-reply --dest="org.freedesktop.UPower" /org/freedesktop/UPower org.freedesktop.UPower.Suspend &
 	# gimp &
  else
 	# echo "   No suspend occurring, activity or cpu use too high" >> $DIR/cansuspend.log
@@ -64,7 +64,7 @@ do
 	echo "["$TIMESTAMP"] "$IDLETIME" s : "$((CPUAVE/10))" % ("$((CPU/10))") : "$((NETAVE/SLEEPTIME))" kB/s ("$((NET/SLEEPTIME))") : "$SCREENDIFF" px : "$SCRDIFFPERCENT" % : "$AUDIOAVE" 1000ths ("$AUDIOVOLUME")" >> $DIR/cansuspend.log
 	if [ $SCREENDIFF -lt $SCREENDIFFLIMIT ]
 	then
-		SCREENDIFFTIME=$(($SCREENDIFFTIME+60))		
+		SCREENDIFFTIME=$(($SCREENDIFFTIME+$SLEEPTIME))		
 		if [ $SCREENDIFFTIME -gt $MONITORTIMEOUT ]
    		then
 			echo " dpms suspend" >> $DIR/cansuspend.log
