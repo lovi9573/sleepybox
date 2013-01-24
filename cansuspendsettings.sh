@@ -1,6 +1,6 @@
 #####Settings for cansuspend script#####
 #Inactivity time in seconds to trigger suspend (seconds)
-IDLETIMEOUT=60
+IDLETIMEOUT=600
 #Cpu use lower limit to trigger suspend (tenths of percent , 1000 is max)(140 for pandora)
 CPULOWLIMIT=400
 #Network lower limit to trigger suspend (kB/s) 

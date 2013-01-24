@@ -62,7 +62,7 @@ do
 	# echo "   No suspend occurring, activity or cpu use too high" >> $DIR/cansuspend.log
 	# echo "   "$IDLETIME" : "$CPUAVE >> $DIR/cansuspend.log
 	echo "["$TIMESTAMP"] "$IDLETIME" s : "$((CPUAVE/10))" % ("$((CPU/10))") : "$((NETAVE/SLEEPTIME))" kB/s ("$((NET/SLEEPTIME))") : "$SCREENDIFF" px : "$SCRDIFFPERCENT" % : "$AUDIOAVE" 1000ths ("$AUDIOVOLUME")" >> $DIR/cansuspend.log
-	if [ $SCREENDIFF -lt $SCREENDIFFLIMIT ]
+	if [ $SCRDIFFPERCENT -lt $SCREENDIFFLIMIT ]
 	then
 		SCREENDIFFTIME=$(($SCREENDIFFTIME+$SLEEPTIME))		
 		if [ $SCREENDIFFTIME -gt $MONITORTIMEOUT ]
