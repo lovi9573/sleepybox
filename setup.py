@@ -5,6 +5,7 @@ written by: Jesse Lovitt
 """
 
 import subprocess
+import stat
 import os
 from os.path import expanduser
 
@@ -75,19 +76,40 @@ if __name__ == "__main__":
 	print "" 
 	print "Settings written to ", fn
 
-	#Add startup line to .bash_profile
+	#Add startup / kill script to .session
 	home = expanduser("~")
-	fn = os.path.join(home,".bash_profile")
-	fh = open(fn, "r")
-	profile = fh.readlines()
-	start_found = False
-	for line in profile:
-		if "cansuspend" in line:
-			start_found = True
-	if not start_found:
-		fh = open(fn, "a")
-		fh.writelines(["#Start the smart suspend script\n",os.path.join(suspendpath,"cansuspend") + " &> "+os.path.join(suspendpath,"cansuspenderror.log")+" &"])
-		print "Startup line written to .bash_profile"
+	dirn = os.path.join(home,".session")
+	if not os.path.exists(dirn):
+		os.makedirs(dirn)
+	fn = os.path.join(dirn, "cansuspend")	
+	fh = open(fn, "w")
+	script = """#/bin/bash
+
+if [ "$1" = 'presession' ]; then
+  #Start the smart suspend script
+  CSPID=$(cat "$HOME/suspend/pid")
+  if [ -n "$CSPID" ]; then
+    kill $CSPID &>> "$HOME/suspend/cansuspenderror.log"	
+  fi
+  $HOME/suspend/cansuspend &>> /home/user/suspend/cansuspenderror.log &
+  echo "cansuspend started"
+fi
+
+if [ "$1" = 'postsession' ]; then
+  #Stop the smart suspend script
+  echo \"Shutdown\n\" >> \"$HOME/suspend/cansuspend.log\"
+  CSPID=$(cat \"$HOME/suspend/pid\")
+  kill $CSPID &>> \"$HOME/suspend/cansuspenderror.log\"
+  echo "cansuspend stopped"
+fi
+
+"""
+	fh.writelines([script])
+	os.fchmod(fh.fileno(), 511)
+	print "Startup line written to ~/.session/cansuspend"
+	print ""
+	print "*** Don't forget to run setupgdm.py with root permissions"
+
 
 	
 	
