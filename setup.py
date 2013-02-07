@@ -87,11 +87,17 @@ if __name__ == "__main__":
 
 if [ "$1" = 'presession' ]; then
   #Start the smart suspend script
-  CSPID=$(cat "$HOME/suspend/pid")
-  if [ -n "$CSPID" ]; then
-    kill $CSPID &>> "$HOME/suspend/cansuspenderror.log"	
+  #CSPID=$(cat "$HOME/suspend/pid")
+  #if [ -n "$CSPID" ]; then
+  #  kill $CSPID &>> "$HOME/suspend/cansuspenderror.log"	
+  #fi
+  if [ -e "$HOME/suspend/run" ]; 
+  then
+    :
+  else
+    touch $HOME/suspend/run
+    $HOME/suspend/cansuspend &>> /home/user/suspend/cansuspenderror.log &
   fi
-  $HOME/suspend/cansuspend &>> /home/user/suspend/cansuspenderror.log &
   echo "cansuspend started"
 fi
 
@@ -99,7 +105,8 @@ if [ "$1" = 'postsession' ]; then
   #Stop the smart suspend script
   echo \"Shutdown\n\" >> \"$HOME/suspend/cansuspend.log\"
   CSPID=$(cat \"$HOME/suspend/pid\")
-  kill $CSPID &>> \"$HOME/suspend/cansuspenderror.log\"
+  #kill $CSPID &>> \"$HOME/suspend/cansuspenderror.log\"
+  rm $HOME/suspend/run 
   echo "cansuspend stopped"
 fi
 

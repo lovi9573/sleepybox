@@ -15,8 +15,8 @@ MONITORTIMEOUT=60
 
 #Number of seconds to sleep before recheck for suspend criteria
 SLEEPTIME=60
-#Weight given to new readings in the moving average (percent)
-NEWREADINGWEIGHT=40
+#Time for old readings to decay to 10% of running average (percent)
+DECAYTIME=180
 #Pixel area to resize screenshots to
 SCREENAREA=500000
 #Network card to read data throughput from

@@ -39,7 +39,7 @@ if __name__ == "__main__":
   if [ -n "$HOME" ] && [ -n "$USER" ] && [ -d "$HOME/.session/" ]; then
     for script in "$HOME/.session"/* ; do
       if [ -f "$script" ]; then
-        $script presession
+        sudo -u $USER $script presession &> $HOME/suspend/gdm.log
       fi
     done
   fi
@@ -52,7 +52,7 @@ if __name__ == "__main__":
   if [ -n "$HOME" ] && [ -n "$USER" ] && [ -d "$HOME/.session/" ]; then
     for script in "$HOME/.session"/* ; do
       if [ -f "$script" ]; then
-        $script postsession
+        sudo -u $USER $script postsession &> $HOME/suspend/gdm.log
       fi
     done
   fi
