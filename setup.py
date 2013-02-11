@@ -26,19 +26,30 @@ if __name__ == "__main__":
 
 	#Get sound channel to monitor
 	channels = {}
-	tmp = subprocess.check_output(["pactl","list"])
-	curr_chan = ""
-	for line in tmp.split("\n"):
-		if line and line[0] != " " and line.strip()[0:6] == "Source":
-			curr_chan = line			
-			channels[line] = ["" , ""]
-		elif curr_chan != "":
-			line_c = line.lstrip().split(":")
-			if line_c[0] == "Name":
-				channels[curr_chan][0] = line_c[1].lstrip()
-			elif line_c[0] == "Description":
-				channels[curr_chan][1] = line_c[1]
-			
+	tmp = subprocess.check_output(["pactl","list"])	
+	for section in tmp.split("\n\n"):
+		lines = section.split("\n")
+		if lines[0].strip()[0:6] == "Source":
+			channels[lines[0]] = ["",""]
+			for line in lines:
+				l = line.strip().split(":")
+				if l[0] == "Name":
+					channels[lines[0]][0] = l[1].strip()
+				elif l[0] == "Description":
+					channels[lines[0]][1] = l[1]
+				
+
+
+	#Get VirtualBox machines to shutdown
+	try:
+		tmp = subprocess.check_output(["VBoxManage","list","vms"])
+		vms = "("
+		for line in tmp:
+			if line.strip()[0] =="\"":
+				vms += line.split("\"")[0]
+		vms = vms.strip() + ")"
+	except(OSError):
+		vms = ""			
 	
 	#Get user preferences:
 	e_interfaces = list(enumerate(interfaces.keys()))
@@ -63,7 +74,7 @@ if __name__ == "__main__":
 
 	#Write settings to disk
 	suspendpath = os.path.normpath(os.path.join(os.path.realpath(__file__),".."))	
-	fn = os.path.join(suspendpath,"cansuspendsettings.sh")	
+	fn = os.path.join(suspendpath,"sleepyboxsettings.sh")	
 	fh = open(fn,"r")
 	settings = fh.readlines()
 	for i,line in enumerate(settings):
@@ -71,6 +82,8 @@ if __name__ == "__main__":
 			settings[i] ="NETCARD="+net+"\n"
 		if line[0:9] == "SOUNDCARD":
 			settings[i] = "SOUNDCARD="+snd+"\n"
+		if line[0:9] == "VBMACHINE" and vms != "":
+			settings[i] = "VBMACHINE="+vms+"\n"
 	fh = open(fn,"w")
 	fh.writelines(settings)
 	print "" 
@@ -96,9 +109,9 @@ if [ "$1" = 'presession' ]; then
     :
   else
     touch $HOME/suspend/run
-    $HOME/suspend/cansuspend &>> /home/user/suspend/cansuspenderror.log &
+    $HOME/suspend/sleepyboxd &>> /home/user/suspend/cansuspenderror.log &
   fi
-  echo "cansuspend started"
+  echo "sleepybox started"
 fi
 
 if [ "$1" = 'postsession' ]; then
@@ -107,7 +120,7 @@ if [ "$1" = 'postsession' ]; then
   CSPID=$(cat \"$HOME/suspend/pid\")
   #kill $CSPID &>> \"$HOME/suspend/cansuspenderror.log\"
   rm $HOME/suspend/run 
-  echo "cansuspend stopped"
+  echo "sleepybox stopped"
 fi
 
 """
@@ -116,6 +129,7 @@ fi
 	print "Startup line written to ~/.session/cansuspend"
 	print ""
 	print "*** Don't forget to run setupgdm.py with root permissions"
+	print "*** You must also comment out the line 'Defaults requiretty' using visudo"
 
 
 	

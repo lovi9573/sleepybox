@@ -1,21 +1,4 @@
 #/bin/bash
-DIR="$( cd "$( dirname "$0" )" && pwd )"
-DATE=$(date)
-echo $$ > $DIR/pid
-trap "echo [$DATE]    halt >> $DIR/cansuspend.log; exit" SIGABRT
-echo "" >> $DIR/cansuspend.log
-. $DIR/cansuspendsettings.sh
-echo "[POWERON]================="$DATE"=================" >> $DIR/cansuspend.log
-CPUAVE=1000
-NETAVE=30
-AUDIOAVE=10
-SCREENDIFFTIME=0
-RX=$(ifconfig $NETCARD|grep 'RX packets'|cut -d' ' -f14)
-TX=$(ifconfig $NETCARD|grep 'TX packets'|cut -d' ' -f14)
-while [ -e $DIR/run ]
-do 
- #Read settings (put here so settings can change while this script continues to run as daemon)
- . $DIR/cansuspendsettings.sh
 
  #Gather metrics
  #Idle time
@@ -63,12 +46,14 @@ do
 	echo "["$TIMESTAMP"]-------Suspending due to inactivity and low cpu usage [ "$IDLETIME" : "$((CPUAVE/10))" : "$NETAVE" : "$SCRDIFFPERCENT" : "$AUDIOAVE" ]" >> $DIR/cansuspend.log
 	ps au -U 500 | sed -r 's/(.*)/\t\1/' >> $DIR/cansuspend.log
 	echo "" >> $DIR/cansuspend.log
-	#VBoxManage controlvm winXP savestate &> $DIR/cansuspenderror.log
+	if [ -n "$VBMACHINE" ]; then
+	  for MACH in "${VBMACHINE[*]}" 
+	  do
+	    VBoxManage controlvm $MACH savestate &> $DIR/cansuspenderror.log
+	  done
+	fi	
 	dbus-send --system --print-reply --dest="org.freedesktop.UPower" /org/freedesktop/UPower org.freedesktop.UPower.Suspend &
-	# gimp &
  else
-	# echo "   No suspend occurring, activity or cpu use too high" >> $DIR/cansuspend.log
-	# echo "   "$IDLETIME" : "$CPUAVE >> $DIR/cansuspend.log
 	echo "["$TIMESTAMP"] "$IDLETIME" s : "$((CPUAVE/10))" % ("$((CPU/10))") : "$((NETAVE/SLEEPTIME))" kB/s ("$((NET/SLEEPTIME))") : "$SCREENDIFF" px ("$SCRDIFFPERCENT"%) : "$AUDIOAVE" 1000ths ("$AUDIOVOLUME") : "$NEWREADINGWEIGHT" wght" >> $DIR/cansuspend.log
 	if [ $SCRDIFFPERCENT -lt $SCREENDIFFLIMIT ]
 	then
@@ -81,8 +66,8 @@ do
 		fi
 	fi
  fi
- sleep $SLEEPTIME
-done
+
+
 	   
 
 
