@@ -98,28 +98,24 @@ if __name__ == "__main__":
 	fh = open(fn, "w")
 	script = """#/bin/bash
 
+SUSPENDPATH="""+suspendpath+"""
+
 if [ "$1" = 'presession' ]; then
   #Start the smart suspend script
-  #CSPID=$(cat "$HOME/suspend/pid")
-  #if [ -n "$CSPID" ]; then
-  #  kill $CSPID &>> "$HOME/suspend/cansuspenderror.log"	
-  #fi
-  if [ -e "$HOME/suspend/run" ]; 
+  if [ -e "$SUSPENDPATH/run" ]; 
   then
     :
   else
-    touch $HOME/suspend/run
-    $HOME/suspend/sleepyboxd &>> /home/user/suspend/cansuspenderror.log &
+    touch $SUSPENDPATH/run
+    $SUSPENDPATH/sleepyboxd &>> $SUSPENDPATH/cansuspenderror.log &
   fi
   echo "sleepybox started"
 fi
 
 if [ "$1" = 'postsession' ]; then
   #Stop the smart suspend script
-  echo \"Shutdown\n\" >> \"$HOME/suspend/cansuspend.log\"
-  CSPID=$(cat \"$HOME/suspend/pid\")
-  #kill $CSPID &>> \"$HOME/suspend/cansuspenderror.log\"
-  rm $HOME/suspend/run 
+  echo \"Shutdown\n\" >> \"$SUSPENDPATH/cansuspend.log\"
+  rm $SUSPENDPATH/run 
   echo "sleepybox stopped"
 fi
 
