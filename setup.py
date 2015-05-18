@@ -127,7 +127,8 @@ fi
 	print "*** Don't forget to run setupgdm.py with root permissions"
 	print "*** You must also comment out the line 'Defaults requiretty' using visudo"
 
-
+#TODO: copy sleepybox.service to /etc/systemd/system/
+#TODO: Put a sleepybox executable in /usr/bin/
 	
 	
 

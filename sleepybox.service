@@ -1,0 +1,9 @@
+[Unit]
+Description=SleepyBox
+
+[Service]
+ExecStartPre=killall sleepybox
+ExecStart=/usr/bin/sleepybox
+
+[Install]
+WantedBy=multi-user.target
