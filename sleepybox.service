@@ -1,9 +1,15 @@
 [Unit]
-Description=SleepyBox
+Description=Smart suspend service
+After=graphical.target
+Requires=graphical.target
+
 
 [Service]
-ExecStartPre=killall sleepybox
-ExecStart=/usr/bin/sleepybox
+Type=simple
+
+#Environment=XDG_RUNTIME_DIR=/run/user/1000 SHELL=%s
+ExecStart=/usr/bin/python /usr/share/sleepybox/sleepybox.py
+ExecReload=/usr/bin/python /usr/share/sleepybox/sleepybox.py
 
 [Install]
-WantedBy=multi-user.target
+#WantedBy=graphical.target
