@@ -11,13 +11,16 @@ install:
 	cp sleepyboxsettings /etc/sleepybox
 	cp cutoffs /etc/sleepybox
 	mkdir /var/log/sleepybox
-	cp sleepybox.service /lib/systemd/system
+	cp sleepybox.service /lib/systemd/system/
+	cp org.lovi9573.sleepybox.conf /etc/dbus-1/system.d/
 	systemctl --system daemon-reload
 	systemctl start sleepybox.service
+
 	
 uninstall:
 	systemctl stop sleepybox.service
 	rm -fR /usr/share/sleepybox
 	rm -fR /etc/sleepybox
 	rm -fR /var/log/sleepybox
-	rm -f /lib/systemd/system/sleepybox.service	
+	rm -f /lib/systemd/system/sleepybox.service
+	rm -f /etc/dbus-1/system.d/org.lovi9573.sleepybox.conf	

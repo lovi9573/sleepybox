@@ -8,8 +8,8 @@ Requires=graphical.target
 Type=simple
 
 #Environment=XDG_RUNTIME_DIR=/run/user/1000 SHELL=%s
-ExecStart=/usr/bin/python /usr/share/sleepybox/sleepybox.py
-ExecReload=/usr/bin/python /usr/share/sleepybox/sleepybox.py
+ExecStart=/usr/bin/python /usr/share/sleepybox/sleepyboxd.py
+ExecReload=/usr/bin/python /usr/share/sleepybox/sleepyboxd.py
 
 [Install]
 #WantedBy=graphical.target
