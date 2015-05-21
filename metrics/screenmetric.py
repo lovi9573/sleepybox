@@ -9,7 +9,7 @@ from PIL import Image
 import StringIO
 
 
-class screenmetric(suspendmetric.suspendmetric):
+class Metric(suspendmetric.suspendmetric):
     
     def __init__(self):
         self.lastScreenShots = {}

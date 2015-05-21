@@ -3,7 +3,7 @@ import utility
 
 
 
-class soundmetric(suspendmetric.suspendmetric):
+class Metric(suspendmetric.suspendmetric):
     jiffies = [0,0]
     jiffies_old = [0,0]
     

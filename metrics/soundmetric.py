@@ -3,7 +3,7 @@ import utility
 
 
 
-class cpumetric(suspendmetric.suspendmetric):
+class Metric(suspendmetric.suspendmetric):
     
     def __init__(self):
         #TODO: get this from the setup script

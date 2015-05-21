@@ -36,7 +36,7 @@ class XScreenSaverSession(object):
             self.xlib.XCloseDisplay(self.dpy)
 
 
-class idletimemetric(suspendmetric.suspendmetric):
+class Metric(suspendmetric.suspendmetric):
 
     def getMetric(self,x):
         idletime = 10000000

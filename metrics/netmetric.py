@@ -1,7 +1,7 @@
 import utility
 import suspendmetric
 
-class netmetric(suspendmetric.suspendmetric):
+class Metric(suspendmetric.suspendmetric):
     bytes = 0
     bytes_old = 0
     
