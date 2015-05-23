@@ -8,7 +8,7 @@ install:
 	mkdir /usr/share/sleepybox/metrics
 	cp ./metrics/* /usr/share/sleepybox/metrics
 	mkdir /etc/sleepybox
-	cp sleepyboxsettings /etc/sleepybox
+	cp sleepybox.conf /etc/sleepybox
 	cp cutoffs /etc/sleepybox
 	mkdir /var/log/sleepybox
 	cp sleepybox.service /lib/systemd/system/
@@ -17,10 +17,14 @@ install:
 	systemctl start sleepybox.service
 
 	
-uninstall:
-	systemctl stop sleepybox.service
+uninstall: stop remove
+
+remove:	
 	rm -fR /usr/share/sleepybox
 	rm -fR /etc/sleepybox
 	rm -fR /var/log/sleepybox
 	rm -f /lib/systemd/system/sleepybox.service
 	rm -f /etc/dbus-1/system.d/org.lovi9573.sleepybox.conf	
+
+stop:
+	systemctl stop sleepybox.service
