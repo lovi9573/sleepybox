@@ -6,7 +6,8 @@ install:
 	mkdir /usr/share/sleepybox
 	cp ./*.py /usr/share/sleepybox
 	mkdir /usr/share/sleepybox/metrics
-	cp ./metrics/* /usr/share/sleepybox/metrics
+	#cp ./metrics/* /usr/share/sleepybox/metrics
+	cp ./metrics/cpumetric.py /usr/share/sleepybox/metrics
 	mkdir /etc/sleepybox
 	cp sleepybox.conf /etc/sleepybox
 	cp cutoffs /etc/sleepybox

@@ -32,10 +32,10 @@ class SleepyBoxService(dbus.service.Object):
         self.config = getConfig(CONFIGFILE)
         self.cutoffs = getCutoffs(CUTOFFSFILE)
         self.modules = {}
-        for modulename in [f.strip(".py") for f in os.listdir("/usr/share/sleepybox/metrics") if f[-3:] == ".py"]:
+        for modulename in [f.strip(".py") for f in os.listdir("/usr/share/sleepybox/metrics") if (f[-3:] == ".py" and f[:8] != "__init__")]:
             self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric()
-            bus_name = dbus.service.BusName('org.lovi9573.sleepyboxservice', bus=dbus.SystemBus())
-            dbus.service.Object.__init__(self, bus_name, '/org/lovi9573/sleepyboxservice')
+        bus_name = dbus.service.BusName('org.lovi9573.sleepyboxservice', bus=dbus.SystemBus())
+        dbus.service.Object.__init__(self, bus_name, '/org/lovi9573/sleepyboxservice')
         PerpetualTimer(threading.Event(),self.config.get("POLLTIME",120),self.check).start()
 
     def check(self):
