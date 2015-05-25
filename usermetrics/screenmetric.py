@@ -15,6 +15,7 @@ class Metric(suspendmetric.suspendmetric):
         self.lastScreenShots = {}
 
     def getMetric(self,x):
+        return 10
         #im = Image.open(StringIO.StringIO("some image string"))
         displays = utility.getXSessionAuths()
         diff = 0

@@ -1,120 +1,102 @@
-import time
-import importlib
-import glob
-import re
-import sys
-import traceback
+import gobject
 import dbus
-import subprocess
+import dbus.service
+from dbus.mainloop.glib import DBusGMainLoop
+import datetime
+from config import getConfig,getCutoffs
+import threading
 import os
+from os.path import join
+import sys
+from subprocess import call
+
+HOME = os.getenv('HOME')
+USERLOGFILE=join(HOME,'sleepybox/sleepybox.log')
+CONFIGFILE=join(HOME,'sleepybox/sleepybox.conf')
+CUTOFFSFILE=join(HOME,'sleepybox/cutoffs')
+
+SLEEP=1
+SCREENOFF=2
 
 
-"""
-TODOS:
-Fix the above / below implementation
-"""
+
+class SleepyBoxService(dbus.service.Object):
+    def __init__(self):
+        self.config = getConfig(CONFIGFILE)
+        self.cutoffs = getCutoffs(CUTOFFSFILE)
+        self.modules = {}
+        for modulename in [f.strip(".py") for f in os.listdir("/usr/share/sleepybox/metrics") if (f[-3:] == ".py" and f[:8] != "__init__")]:
+            with open(USERLOGFILE,"a") as fout:
+                fout.write("loading {}\n".format(modulename))
+            try:
+                self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric()
+            except:
+                with open(USERLOGFILE,"a") as fout:
+                    fout.write("{} unable to load\n".format(modulename))  
+        bus = dbus.SystemBus()
+        proxy = bus.get_object('org.lovi9573.sleepyboxservice', '/org/lovi9573/sleepyboxservice')
+        proxy.connect_to_signal('signal', self.check, 'org.lovi9573.sleepyboxservice')
+
+
+    def check(self,t):
+        sleep = True
+        screenoff = True
+        with open(USERLOGFILE,"a") as fout:
+            for modulename, module in [(a,b) for a,b in self.modules.iteritems() if a in self.cutoffs.keys()]:
+                #fout.write("reading from {}\n".format(modulename))
+                #fout.flush()
+                try:
+                    v = module.getMetric(1)
+                    cSleep = self.cutoffs.get(modulename,{}).get('sleepcut',0.0)
+                    cScreen = self.cutoffs.get(modulename,{}).get('screencut',0.0)
+                    fmt = module.getFormatting()
+                    units = module.getUnits()
+                    #fout.write(units+" "+fmt+" "+str(cSleep)+" "+str(cScreen)+" "+str(v)+" Checkpoint\n")
+                    #fout.flush()
+                    fout.write(("\t{}: {"+fmt+"} {} sleep:{"+fmt+"},screen:{"+fmt+"}\n").format(modulename,v,units,cSleep,cScreen))
+                    sleepcut = v < cSleep
+                    screencut = v < cScreen
+                    if self.cutoffs.get(modulename,{}).get('a/b','b') == 'a':
+                        sleepcut = not sleepcut
+                        screencut = not screencut
+                    if not sleepcut:
+                        sleep = False
+                    if not screencut:
+                        screenoff = False
+                except:
+                    fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
+                    del self.modules[modulename]
+            if not sleep and t == SLEEP:
+                bus = dbus.SystemBus()
+                proxy = bus.get_object('org.lovi9573.sleepyboxservice', '/org/lovi9573/sleepyboxservice')
+                iface = dbus.Interface(proxy,'org.lovi9573.sleepyboxservice')
+                iface.veto()
+            elif screenoff:
+                self.doScreenOff()
+            #fout.write("ending check\n")
+        
+
+   
+    def doScreenOff(self):
+        if not self.vetos:
+            with open(USERLOGFILE,"a") as fout:
+                fout.write("[{}] Initiating Screen Shutdown \n".format(datetime.datetime.now().__str__() ))
+            self.vetos = False
+            #TODO: shutdown screen
+            bus = dbus.SessionBus()
+            with open(USERLOGFILE,"a") as fout:
+                fout.write("screen shutdown\n")
+            proxy = bus.get_object('org.gnome.ScreenSaver', '/org/gnome/ScreenSaver')
+            iface = dbus.Interface(proxy,'org.gnome.ScreenSaver')
+            iface.Lock()
+        self.vetos = False
 
 
 if __name__ == "__main__":
-    
-    # Open the log files
-    logfile = open("/var/log/sleepybox/sleepybox.log","w") 
-    statuslogfile = open("/var/log/sleepybox/sleepyboxstatus.log","w")
-
-    # Load metrics modules
-    modules = {}
-    files = glob.glob("/usr/share/sleepybox/metrics/*metric.py")
-    r = re.compile('/usr/share/sleepybox/metrics/(.*).py')
-    statuslogfile.write("Metrics Modules found:\n")
-    for file in files:
-        statuslogfile.write("\t"+file+"\n")
-        m = r.match(file)
-        name = "metrics."+m.group(1)
-        mod = importlib.import_module(name)
-        g = globals()
-        modules[m.group(1)] = getattr(mod,m.group(1))()
-        
-    #Load global settings 
-    settings = {}
-    settingsfile = open("/etc/sleepybox/sleepyboxsettings","r")
-    statuslogfile.write("Settings loaded:\n")
-    for line in settingsfile:
-        if (len(line.strip()) > 0 and line.strip()[0] !="#"):
-            statuslogfile.write("\t"+line)
-            keyval = line.split()
-            if (len(keyval)>1):
-                settings[keyval[0]] = keyval[1]
-    
-    #Load cutoffs
-    cutoffs = {}
-    cutoffsfile = open("/etc/sleepybox/cutoffs","r")
-    statuslogfile.write("Cutoffs loaded:\n")
-    for line in cutoffsfile:
-        if (len(line.strip()) > 0 and line.strip()[0] !="#"):
-         #statuslogfile.write("\t"+line)
-         cutofftuple = line.split()
-         if(len(cutofftuple)==5):
-             try:
-                 key = cutofftuple[0]
-                 c = float(cutofftuple[1])
-                 c2 = float(cutofftuple[2])
-                 if(cutofftuple[3] == "r"):
-                     r = True
-                 elif (cutofftuple[3] == "s"):
-                     r = False
-                 else:
-                     raise Exception()
-                 if (cutofftuple[4] == "a"):
-                    a = True
-                 elif (cutofftuple[4] == "b"):
-                    a = False
-                 else:
-                    raise Exception()
-                 cutoffs[key] = {"suspendCutoff":c,"screenCutoff":c2,"rate":r,"actAbove":a}
-                 statuslogfile.write("\t"+key +" : "+ str(cutoffs[key])+"\n")
-             except:
-                 statuslogfile.write("!!! Error loading cutoffs for module: "+cutofftuple[0])
-                 modules.pop(cutofftuple[0],None)
-    
-    statuslogfile.flush()
-    
-    #Enter main loop    
-    while(True):
-        suspend = True
-        screenblank = True
-        
-        #Check all the metrics
-        for name,metricModule in modules.items():
-            try:
-                metric = metricModule.getMetric(int(settings['POLLTIME']))
-                if(not cutoffs[name]["actAbove"] and metric > cutoffs[name]["suspendCutoff"]):
-                    suspend = False
-                if( cutoffs[name]["actAbove"] and metric < cutoffs[name]["suspendCutoff"]):
-                    suspend = False
-                if (not cutoffs[name]["actAbove"] and metric > cutoffs[name]["screenCutoff"]):
-                    screenblank = False
-                if (cutoffs[name]["actAbove"] and metric < cutoffs[name]["screenCutoff"]):
-                    screenblank = False
-                logfile.write( ("{0}: {1"+metricModule.getFormatting()+"} {2}; ").format(name,metric,metricModule.getUnits()))
-            except:
-                statuslogfile.write("!!! Error getting the metrics from module: "+name+"\n"+
-                                    "Exception:\n")
-                statuslogfile.write(traceback.format_exc())
-                modules.pop(name)
-                statuslogfile.flush()
-        logfile.write("\n")
-        logfile.flush()
-        
-        #Take action
-        if (suspend):
-            logfile.write("______________________Suspend Triggered_____________________\n")
-            logfile.flush()
-            dbusSession = dbus.SystemBus()
-            proxy = dbusSession.get_object("org.freedesktop.UPower", "/org/freedesktop/UPower")
-            #proxy.Suspend(dbus_interface="org.freedesktop.UPower")
-        elif(screenblank):
-            logfile.write("______________________Screen shutdown Triggered_____________________\n")
-            logfile.flush()
-            #subprocess.call("xset dpms force standby")
-           
-        time.sleep(int(settings['POLLTIME']))
+    with open(USERLOGFILE,'w') as fout:
+        fout.write("[{}] Starting sleepybox service daemon \n".format(datetime.datetime.now().__str__() ))
+    DBusGMainLoop(set_as_default=True)
+    myservice = SleepyBoxService()
+    gobject.threads_init()
+    loop = gobject.MainLoop()
+    loop.run()

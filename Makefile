@@ -6,11 +6,13 @@ install:
 	mkdir /usr/share/sleepybox
 	cp ./*.py /usr/share/sleepybox
 	mkdir /usr/share/sleepybox/metrics
-	#cp ./metrics/* /usr/share/sleepybox/metrics
-	cp ./metrics/cpumetric.py /usr/share/sleepybox/metrics
+	cp ./metrics/* /usr/share/sleepybox/metrics
+	#cp ./metrics/cpumetric.py /usr/share/sleepybox/metrics
+	#cp ./metrics/__init__.py /usr/share/sleepybox/metrics
 	mkdir /etc/sleepybox
 	cp sleepybox.conf /etc/sleepybox
 	cp cutoffs /etc/sleepybox
+	#cp sleepybox.service.evn /etc/sysconfig/sleepybox
 	mkdir /var/log/sleepybox
 	cp sleepybox.service /lib/systemd/system/
 	cp org.lovi9573.sleepybox.conf /etc/dbus-1/system.d/

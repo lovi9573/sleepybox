@@ -6,8 +6,9 @@ Requires=graphical.target
 
 [Service]
 Type=simple
-
 #Environment=XDG_RUNTIME_DIR=/run/user/1000 SHELL=%s
+#EnvironmentFile=-/etc/sysconfig/sleepybox
+Environment="PYTHONPATH=/usr/share/sleepybox"
 ExecStart=/usr/bin/python /usr/share/sleepybox/sleepyboxd.py
 ExecReload=/usr/bin/python /usr/share/sleepybox/sleepyboxd.py
 
