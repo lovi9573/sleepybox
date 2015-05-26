@@ -18,7 +18,7 @@ class Metric(suspendmetric.suspendmetric):
        return float(cpuave) 
    
     def getUnits(self):
-       return "/1000"
+       return "/1.0"
 
     def getFormatting(self):
-       return ":>4"
+       return ":>5.2"

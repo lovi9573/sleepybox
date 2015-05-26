@@ -5,6 +5,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 import datetime
 from config import getConfig,getCutoffs
 import threading
+import time
 import os
 import sys
 from subprocess import call
@@ -26,7 +27,7 @@ class PerpetualTimer(threading.Thread):
         
     def run(self):
         while not self.stopped.wait(self.time):
-            print self.callback()
+            self.callback()
 
 
 class SleepyBoxService(dbus.service.Object):
@@ -55,6 +56,7 @@ class SleepyBoxService(dbus.service.Object):
         sleep = True
         screenoff = True
         with open(LOGFILE,"a") as fout:
+            fout.write("[{}]\n".format(datetime.datetime.now().__str__() ))
             for modulename, module in [(a,b) for a,b in self.modules.iteritems() if a in self.cutoffs.keys()]:
                 #fout.write("reading from {}\n".format(modulename))
                 #fout.flush()
@@ -80,11 +82,13 @@ class SleepyBoxService(dbus.service.Object):
                     fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
                     del self.modules[modulename]
             if sleep:
-                fout.write("[{}] Sleep requested\n".format(datetime.datetime.now().__str__() ))
-                threading.Timer(int(self.config.get("VETOTIME",20)), self.doSleep).start()        
+                fout.write("\t=> Sleep requested\n")
+                #threading.Timer(int(self.config.get("VETOTIME",20)), self.doSleep).start()        
                 self.signal(SLEEP)
+                time.sleep(int(self.config.get("VETOTIME",20)))
+                self.doSleep()
             elif screenoff:
-                fout.write("[{}] Screen shutdown signalled\n".format(datetime.datetime.now().__str__() ))
+                fout.write("\t=> Screen shutdown signalled\n")
                 #threading.Timer(int(self.config.get("VETOTIME",20)), self.doScreenOff).start()        
                 self.signal(SCREENOFF) 
             #fout.write("ending check\n")
@@ -109,14 +113,16 @@ class SleepyBoxService(dbus.service.Object):
             #TODO: shutdown the VM's
             vms = [x.strip() for x in self.config.get("VBMACHINE","").split(",") if x.strip() !=""]
             for vm in vms:
+                pass
                 call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])
             #TODO: sleep
             #dbus-send --system --print-reply --dest="org.freedesktop.UPower" /org/freedesktop/UPower org.freedesktop.UPower.Suspend &
             bus=dbus.SystemBus()
             with open(LOGFILE,"a") as fout:
-                fout.write("sleep\n")
-            proxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower")
-            iface = dbus.Interface(proxy,"org.freedesktop.UPower")
+                fout.write("\tsleep\n")
+            #TODO:This line segfaults on 3rd call
+            #proxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower",False)
+            #iface = dbus.Interface(proxy,"org.freedesktop.UPower")
             #iface.Suspend()
         self.vetos = False
    
@@ -125,9 +131,9 @@ class SleepyBoxService(dbus.service.Object):
 if __name__ == "__main__":
     with open(LOGFILE,'w') as fout:
         fout.write("[{}] Starting sleepybox service daemon \n".format(datetime.datetime.now().__str__() ))
+    gobject.threads_init()
     DBusGMainLoop(set_as_default=True)
     myservice = SleepyBoxService()
     myservice.start()
-    gobject.threads_init()
     loop = gobject.MainLoop()
     loop.run()
