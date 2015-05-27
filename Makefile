@@ -1,8 +1,9 @@
-
+USERROOT=$(HOME)/sleepybox
 
 reload: uninstall install
 
 install:
+	###### system service ######
 	mkdir /usr/share/sleepybox
 	cp ./*.py /usr/share/sleepybox
 	mkdir /usr/share/sleepybox/metrics
@@ -19,8 +20,17 @@ install:
 	systemctl --system daemon-reload
 	systemctl start sleepybox.service
 
+userinstall:
+	###### user service ######
+	mkdir $(USERROOT)
+	cp sleepybox.conf $(USERROOT)
+	cp cutoffs $(USERROOT)
+	mkdir $(USERROOT)/metrics
+	cp ./usermetrics/*.py $(USERROOT)/metrics
+
+
 	
-uninstall: stop remove
+uninstall: stop remove userremove
 
 remove:	
 	rm -fR /usr/share/sleepybox
@@ -28,6 +38,9 @@ remove:
 	rm -fR /var/log/sleepybox
 	rm -f /lib/systemd/system/sleepybox.service
 	rm -f /etc/dbus-1/system.d/org.lovi9573.sleepybox.conf	
+
+userremove:
+	rm -rf $(USERROOT)
 
 stop:
 	systemctl stop sleepybox.service

@@ -14,18 +14,19 @@ HOME = os.getenv('HOME')
 USERLOGFILE=join(HOME,'sleepybox/sleepybox.log')
 CONFIGFILE=join(HOME,'sleepybox/sleepybox.conf')
 CUTOFFSFILE=join(HOME,'sleepybox/cutoffs')
+METRICSPATH = join(HOME,'sleepybox/metrics')
 
 SLEEP=1
 SCREENOFF=2
 
 
 
-class SleepyBoxService(dbus.service.Object):
+class SleepyBoxUserService(dbus.service.Object):
     def __init__(self):
         self.config = getConfig(CONFIGFILE)
         self.cutoffs = getCutoffs(CUTOFFSFILE)
         self.modules = {}
-        for modulename in [f.strip(".py") for f in os.listdir("/usr/share/sleepybox/metrics") if (f[-3:] == ".py" and f[:8] != "__init__")]:
+        for modulename in [f.strip(".py") for f in os.listdir(METRICSPATH) if (f[-3:] == ".py" and f[:8] != "__init__")]:
             with open(USERLOGFILE,"a") as fout:
                 fout.write("loading {}\n".format(modulename))
             try:
@@ -34,11 +35,17 @@ class SleepyBoxService(dbus.service.Object):
                 with open(USERLOGFILE,"a") as fout:
                     fout.write("{} unable to load\n".format(modulename))  
         bus = dbus.SystemBus()
-        proxy = bus.get_object('org.lovi9573.sleepyboxservice', '/org/lovi9573/sleepyboxservice')
+        proxy = bus.get_object('org.lovi9573.sleepyboxservice', '/org/lovi9573/sleepyboxservice',False)
         proxy.connect_to_signal('signal', self.check, 'org.lovi9573.sleepyboxservice')
+        self.serviceIface = dbus.Interface(proxy,'org.lovi9573.sleepyboxservice')
+        bus = dbus.SessionBus()
+        proxy = bus.get_object('org.gnome.ScreenSaver', '/org/gnome/ScreenSaver')
+        self.screenIface = dbus.Interface(proxy,'org.gnome.ScreenSaver')
 
 
     def check(self,t):
+        with open(USERLOGFILE,"a") as fout:
+            fout.write("check\n")
         sleep = True
         screenoff = True
         with open(USERLOGFILE,"a") as fout:
@@ -67,10 +74,7 @@ class SleepyBoxService(dbus.service.Object):
                     fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
                     del self.modules[modulename]
             if not sleep and t == SLEEP:
-                bus = dbus.SystemBus()
-                proxy = bus.get_object('org.lovi9573.sleepyboxservice', '/org/lovi9573/sleepyboxservice')
-                iface = dbus.Interface(proxy,'org.lovi9573.sleepyboxservice')
-                iface.veto()
+                self.serviceIface.veto()
             elif screenoff:
                 self.doScreenOff()
             #fout.write("ending check\n")
@@ -78,25 +82,19 @@ class SleepyBoxService(dbus.service.Object):
 
    
     def doScreenOff(self):
-        if not self.vetos:
-            with open(USERLOGFILE,"a") as fout:
-                fout.write("[{}] Initiating Screen Shutdown \n".format(datetime.datetime.now().__str__() ))
-            self.vetos = False
-            #TODO: shutdown screen
-            bus = dbus.SessionBus()
-            with open(USERLOGFILE,"a") as fout:
-                fout.write("screen shutdown\n")
-            proxy = bus.get_object('org.gnome.ScreenSaver', '/org/gnome/ScreenSaver')
-            iface = dbus.Interface(proxy,'org.gnome.ScreenSaver')
-            iface.Lock()
-        self.vetos = False
+        with open(USERLOGFILE,"a") as fout:
+            fout.write("[{}] Initiating Screen Shutdown \n".format(datetime.datetime.now().__str__() ))
+        with open(USERLOGFILE,"a") as fout:
+            fout.write("screen shutdown\n")
+        #TODO: shutdown screen
+        self.screenIface.Lock()
 
 
 if __name__ == "__main__":
     with open(USERLOGFILE,'w') as fout:
-        fout.write("[{}] Starting sleepybox service daemon \n".format(datetime.datetime.now().__str__() ))
+        fout.write("[{}] Starting sleepybox service user daemon \n".format(datetime.datetime.now().__str__() ))
     DBusGMainLoop(set_as_default=True)
-    myservice = SleepyBoxService()
+    myservice = SleepyBoxUserService()
     gobject.threads_init()
     loop = gobject.MainLoop()
     loop.run()

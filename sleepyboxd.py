@@ -43,8 +43,11 @@ class SleepyBoxService(dbus.service.Object):
                 self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric()
             except:
                 with open(LOGFILE,"a") as fout:
-                    fout.write("{} unable to load\n".format(modulename))                
-        bus_name = dbus.service.BusName('org.lovi9573.sleepyboxservice', bus=dbus.SystemBus())
+                    fout.write("{} unable to load\n".format(modulename)) 
+        bus=dbus.SystemBus()   
+        powerproxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower",False) 
+        self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.UPower")           
+        bus_name = dbus.service.BusName('org.lovi9573.sleepyboxservice', bus=bus)
         dbus.service.Object.__init__(self, bus_name, '/org/lovi9573/sleepyboxservice')
         self.timer = PerpetualTimer(threading.Event(),int(self.config.get("POLLTIME",120)),self.check)
         
@@ -101,7 +104,11 @@ class SleepyBoxService(dbus.service.Object):
             fout.write("[{}] Sleep veto'd by {}\n".format(datetime.datetime.now().__str__() , who))
         self.vetos = True
 
-    @dbus.service.signal(dbus_interface='com.lovi9573.sleepyboxservice',signature='i')
+    @dbus.service.method('org.freedesktop.DBus.Introspectable')
+    def Introspect(self, object_path, connection):
+        return dbus.service.Object.Introspect(self, object_path, connection)
+
+    @dbus.service.signal(dbus_interface='org.lovi9573.sleepyboxservice',signature='i')
     def signal(self,t):
         pass
 
@@ -113,17 +120,13 @@ class SleepyBoxService(dbus.service.Object):
             #TODO: shutdown the VM's
             vms = [x.strip() for x in self.config.get("VBMACHINE","").split(",") if x.strip() !=""]
             for vm in vms:
-                pass
                 call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])
-            #TODO: sleep
-            #dbus-send --system --print-reply --dest="org.freedesktop.UPower" /org/freedesktop/UPower org.freedesktop.UPower.Suspend &
-            bus=dbus.SystemBus()
             with open(LOGFILE,"a") as fout:
                 fout.write("\tsleep\n")
             #TODO:This line segfaults on 3rd call
             #proxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower",False)
             #iface = dbus.Interface(proxy,"org.freedesktop.UPower")
-            #iface.Suspend()
+            #self.Iface.Suspend()
         self.vetos = False
    
 
