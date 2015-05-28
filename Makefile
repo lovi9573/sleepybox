@@ -24,9 +24,13 @@ userinstall:
 	###### user service ######
 	mkdir $(USERROOT)
 	cp sleepybox.conf $(USERROOT)
-	cp cutoffs $(USERROOT)
+	cp usercutoffs $(USERROOT)/cutoffs
+	cp sleepybox.py $(USERROOT)/
+	cp suspendmetric.py $(USERROOT)/
+	cp utility.py $(USERROOT)/
+	cp config.py $(USERROOT)/
 	mkdir $(USERROOT)/metrics
-	cp ./usermetrics/*.py $(USERROOT)/metrics
+	cp ./usermetrics/*.py $(USERROOT)/metrics/
 
 
 	
@@ -43,4 +47,4 @@ userremove:
 	rm -rf $(USERROOT)
 
 stop:
-	systemctl stop sleepybox.service
+	-systemctl stop sleepybox.service

@@ -9,6 +9,7 @@ import os
 from os.path import join
 import sys
 from subprocess import call
+import getpass
 
 HOME = os.getenv('HOME')
 USERLOGFILE=join(HOME,'sleepybox/sleepybox.log')
@@ -33,7 +34,8 @@ class SleepyBoxUserService(dbus.service.Object):
                 self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric()
             except:
                 with open(USERLOGFILE,"a") as fout:
-                    fout.write("{} unable to load\n".format(modulename))  
+                    fout.write("{} unable to load\n".format(modulename)) 
+                    fout.write(str(sys.exc_info()[0])) 
         bus = dbus.SystemBus()
         proxy = bus.get_object('org.lovi9573.sleepyboxservice', '/org/lovi9573/sleepyboxservice',False)
         proxy.connect_to_signal('signal', self.check, 'org.lovi9573.sleepyboxservice')
@@ -74,7 +76,7 @@ class SleepyBoxUserService(dbus.service.Object):
                     fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
                     del self.modules[modulename]
             if not sleep and t == SLEEP:
-                self.serviceIface.veto()
+                self.serviceIface.veto(getpass.getuser())
             elif screenoff:
                 self.doScreenOff()
             #fout.write("ending check\n")
@@ -87,7 +89,7 @@ class SleepyBoxUserService(dbus.service.Object):
         with open(USERLOGFILE,"a") as fout:
             fout.write("screen shutdown\n")
         #TODO: shutdown screen
-        self.screenIface.Lock()
+        #self.screenIface.Lock()
 
 
 if __name__ == "__main__":

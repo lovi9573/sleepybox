@@ -37,9 +37,14 @@ class XScreenSaverSession(object):
 
 
 class Metric(suspendmetric.suspendmetric):
+    
+    def __init__(self):
+        #This metric class can be simplified since it is run for each user, who each know their own display number.
+        self.display = os.environ['DISPLAY']
+        self.session = XScreenSaverSession(self.display)
 
     def getMetric(self,x):
-        idletime = 10000000
+        '''idletime = 10000000
         displays = utility.getXSessionAuths()
         for user,displayCreds in displays.items():
             #TODO: dynamically find this file 
@@ -48,8 +53,8 @@ class Metric(suspendmetric.suspendmetric):
             os.environ['XAUTHORITY'] = displayCreds["xauthority"]
             s = XScreenSaverSession(displayCreds["display"])
             idletime = min(idletime, s.get_idle())
-            s.close()
-        return idletime
+            s.close()'''
+        return self.session.get_idle()
     
     def getUnits(self):
         return "sec"
