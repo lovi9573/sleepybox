@@ -1,6 +1,15 @@
 USERROOT=$(HOME)/sleepybox
+LIBPATHS=/usr/lib64
+LIBS=-lImlib2
+LIBS+= -lX11
+
 
 reload: uninstall install
+
+
+screenshot:
+	$(CC) -I/usr/include/X11 $(LIBS) screenshot.c -o screenshot.bin
+
 
 install:
 	###### system service ######
