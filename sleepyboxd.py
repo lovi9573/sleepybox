@@ -123,10 +123,8 @@ class SleepyBoxService(dbus.service.Object):
                 call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])
             with open(LOGFILE,"a") as fout:
                 fout.write("\tsleep\n")
-            #TODO:This line segfaults on 3rd call
-            #proxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower",False)
-            #iface = dbus.Interface(proxy,"org.freedesktop.UPower")
-            #self.Iface.Suspend()
+            #TODO:put back in
+            #self.powerIface.Suspend()
         self.vetos = False
    
 

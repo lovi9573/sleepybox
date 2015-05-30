@@ -1,14 +1,14 @@
 USERROOT=$(HOME)/sleepybox
-LIBPATHS=/usr/lib64
 LIBS=-lImlib2
 LIBS+= -lX11
 
 
 reload: uninstall install
+userreload: userremove userinstall
 
 
 screenshot:
-	$(CC) -I/usr/include/X11 $(LIBS) screenshot.c -o screenshot.bin
+	$(CC) -fpic -shared -I/usr/include/X11 $(LIBS) screenshot.c -o screenshot.so
 
 
 install:
@@ -29,17 +29,20 @@ install:
 	systemctl --system daemon-reload
 	systemctl start sleepybox.service
 
-userinstall:
-	###### user service ######
+	
+
+userinstall: screenshot
 	mkdir $(USERROOT)
+	mkdir $(USERROOT)/metrics
+	###### user service ######
 	cp sleepybox.conf $(USERROOT)
 	cp usercutoffs $(USERROOT)/cutoffs
 	cp sleepybox.py $(USERROOT)/
 	cp suspendmetric.py $(USERROOT)/
 	cp utility.py $(USERROOT)/
 	cp config.py $(USERROOT)/
-	mkdir $(USERROOT)/metrics
 	cp ./usermetrics/*.py $(USERROOT)/metrics/
+	cp ./screenshot.so $(USERROOT)/metrics/
 
 
 	

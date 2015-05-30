@@ -86,8 +86,6 @@ class SleepyBoxUserService(dbus.service.Object):
     def doScreenOff(self):
         with open(USERLOGFILE,"a") as fout:
             fout.write("[{}] Initiating Screen Shutdown \n".format(datetime.datetime.now().__str__() ))
-        with open(USERLOGFILE,"a") as fout:
-            fout.write("screen shutdown\n")
         #TODO: shutdown screen
         #self.screenIface.Lock()
 
