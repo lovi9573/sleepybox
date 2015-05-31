@@ -7,7 +7,11 @@ class Metric(suspendmetric.suspendmetric):
     jiffies = [0,0]
     jiffies_old = [0,0]
     
-    def getMetric(self,x):
+    def __init__(self,weight):
+        super(Metric,self).__init__(weight)
+        
+    
+    def getSample(self,x):
        f = open("/proc/stat","r")
        js = map(int, f.readline().split()[1:])
        self.jiffies[1] += sum(js)
@@ -21,4 +25,4 @@ class Metric(suspendmetric.suspendmetric):
        return "/1.0"
 
     def getFormatting(self):
-       return ":>5.2"
+       return ":>4.3g"

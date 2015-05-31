@@ -20,7 +20,7 @@ class Metric(suspendmetric.suspendmetric):
         self.sslib.getPixelDiff.restype = ctypes.c_float
         
 
-    def getMetric(self,x):
+    def getSample(self,x):
         return self.sslib.getPixelDiff()
     
     def getUnits(self):

@@ -5,7 +5,10 @@ class Metric(suspendmetric.suspendmetric):
     bytes = 0
     bytes_old = 0
     
-    def getMetric(self,dTime):
+    def __init__(self,weight):
+        super(Metric,self).__init__(weight)
+    
+    def getSample(self,dTime):
         f = open("/proc/net/dev","r")
         f.readline()
         f.readline()
@@ -17,11 +20,11 @@ class Metric(suspendmetric.suspendmetric):
             line = f.readline()
         dBytes = self.bytes - self.bytes_old
         self.bytes_old = self.bytes
-        return dBytes/1024/dTime
+        return float(dBytes/1024/dTime)
     
     def getUnits(self):
         return "ave kB/s"
     
     def getFormatting(self):
-        return ":>4"
+        return ":>5.0g"
     

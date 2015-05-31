@@ -1,5 +1,5 @@
 #Cuttoffs for each module
 #Format is as follows, whitespace delimited
-# module name ; suspend cutoff ; screen shutdown cutoff ; r/s (rate or standalone value) ; a/b suspend when value is (a)bove or (b)elow cutoff
-idletimemetric 10 5 s a
-screenmetric 0.05 0.05 s b
+# module name ; suspend cutoff ; screen shutdown cutoff ; weighted average weight of new sample  ; a/b suspend when value is (a)bove or (b)elow cutoff
+idletimemetric 		120 	120		1.0 	a
+screenmetric 		0.05 	0.05 	0.1 	b

@@ -43,7 +43,7 @@ class Metric(suspendmetric.suspendmetric):
         self.display = os.environ['DISPLAY']
         self.session = XScreenSaverSession(self.display)
 
-    def getMetric(self,x):
+    def getSample(self,x):
         '''idletime = 10000000
         displays = utility.getXSessionAuths()
         for user,displayCreds in displays.items():

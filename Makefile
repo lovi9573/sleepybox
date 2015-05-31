@@ -9,6 +9,9 @@ userreload: userremove userinstall
 
 screenshot:
 	$(CC) -fpic -shared -I/usr/include/X11 $(LIBS) screenshot.c -o screenshot.so
+	
+pulseaudiosample:
+	$(CC) -fpic -shared -I/usr/include/pulse -lpulse-simple pulseaudiosample.c -o pulseaudiosample.so
 
 
 install:

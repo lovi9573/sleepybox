@@ -38,9 +38,9 @@ class SleepyBoxService(dbus.service.Object):
         self.modules = {}
         for modulename in [f.strip(".py") for f in os.listdir("/usr/share/sleepybox/metrics") if (f[-3:] == ".py" and f[:8] != "__init__")]:
             with open(LOGFILE,"a") as fout:
-                fout.write("loading {}\n".format(modulename))
+                fout.write("loading {} \n".format(modulename))
             try:
-                self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric()
+                self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric(self.cutoffs[modulename]['weight'])
             except:
                 with open(LOGFILE,"a") as fout:
                     fout.write("{} unable to load\n".format(modulename)) 
@@ -59,19 +59,21 @@ class SleepyBoxService(dbus.service.Object):
         sleep = True
         screenoff = True
         with open(LOGFILE,"a") as fout:
-            fout.write("[{}]\n".format(datetime.datetime.now().__str__() ))
+            fout.write("[{}]\n\t".format(datetime.datetime.now().__str__() ))
             for modulename, module in [(a,b) for a,b in self.modules.iteritems() if a in self.cutoffs.keys()]:
                 #fout.write("reading from {}\n".format(modulename))
                 #fout.flush()
                 try:
-                    v = module.getMetric(1)
+                    v,s = module.getMetric(1) #int(self.config.get("POLLTIME",120)))
                     cSleep = self.cutoffs.get(modulename,{}).get('sleepcut',0.0)
                     cScreen = self.cutoffs.get(modulename,{}).get('screencut',0.0)
                     fmt = module.getFormatting()
                     units = module.getUnits()
+                    #fout.write("\t{} read\n".format(modulename))
+                    #fout.flush()
                     #fout.write(units+" "+fmt+" "+str(cSleep)+" "+str(cScreen)+" "+str(v)+" Checkpoint\n")
                     #fout.flush()
-                    fout.write(("\t{}: {"+fmt+"} {} sleep:{"+fmt+"},screen:{"+fmt+"}\n").format(modulename,v,units,cSleep,cScreen))
+                    fout.write(("{}:{"+fmt+"}({"+fmt+"}){}[{}/{}];").format(modulename,v,s,units,cSleep,cScreen))
                     sleepcut = v < cSleep
                     screencut = v < cScreen
                     if self.cutoffs.get(modulename,{}).get('a/b','b') == 'a':
@@ -85,15 +87,17 @@ class SleepyBoxService(dbus.service.Object):
                     fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
                     del self.modules[modulename]
             if sleep:
-                fout.write("\t=> Sleep requested\n")
+                fout.write(" => Sleep requested\n")
                 #threading.Timer(int(self.config.get("VETOTIME",20)), self.doSleep).start()        
                 self.signal(SLEEP)
                 time.sleep(int(self.config.get("VETOTIME",20)))
                 self.doSleep()
             elif screenoff:
-                fout.write("\t=> Screen shutdown signalled\n")
+                fout.write(" => Screen shutdown signalled\n")
                 #threading.Timer(int(self.config.get("VETOTIME",20)), self.doScreenOff).start()        
                 self.signal(SCREENOFF) 
+            else:
+                fout.write("\n")
             #fout.write("ending check\n")
         
     
@@ -121,8 +125,6 @@ class SleepyBoxService(dbus.service.Object):
             vms = [x.strip() for x in self.config.get("VBMACHINE","").split(",") if x.strip() !=""]
             for vm in vms:
                 call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])
-            with open(LOGFILE,"a") as fout:
-                fout.write("\tsleep\n")
             #TODO:put back in
             #self.powerIface.Suspend()
         self.vetos = False

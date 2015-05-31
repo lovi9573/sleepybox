@@ -31,7 +31,7 @@ class SleepyBoxUserService(dbus.service.Object):
             with open(USERLOGFILE,"a") as fout:
                 fout.write("loading {}\n".format(modulename))
             try:
-                self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric()
+                self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric(self.cutoffs[modulename]['weight'])
             except:
                 with open(USERLOGFILE,"a") as fout:
                     fout.write("{} unable to load\n".format(modulename)) 
