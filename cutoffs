@@ -1,7 +1,0 @@
-#Cuttoffs for each module
-#Format is as follows, whitespace delimited
-# module name ; suspend cutoff ; screen shutdown cutoff ; weighted average weight of new sample or 's' (decay rate or sample) ; a/b suspend when value is (a)bove or (b)elow cutoff
-cpumetric 		0.15	1.0		0.1 b
-netmetric 		1 		10000 	0.1 b
-soundmetric		1		1		0.1 b
-
