@@ -11,18 +11,18 @@ def getConfig(f):
 					config[line[:i]] = line[i+1:]
 	return config
 
-def getCutoffs(f):
-	cutoffs={}
+def getModuleConfig(f):
+	modules={}
+	currentmodule = ''
 	if os.path.isfile(f):
 		with open(f,"r") as fin:
 			for line in [x.strip() for x in fin]:
 				if len(line)>0 and line[0] != "#":
-					
-					name,c1,c2,t,ab = line.split() 
-					cutoffs[name] = {}
-					cutoffs[name]['sleepcut'] = float(c1)
-					cutoffs[name]['screencut'] = float(c2)
-					cutoffs[name]['weight'] = float(t)
-					cutoffs[name]['a/b'] = ab
-	return cutoffs
+					if line[0] == '[' and line[-1] == ']':
+						currentmodule = line[1:-1]
+						modules[currentmodule] = {}
+					elif currentmodule != '':	
+						key,val = line.split() 
+						modules[currentmodule][key] = val
+	return modules
 	

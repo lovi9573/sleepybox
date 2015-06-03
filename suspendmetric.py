@@ -3,7 +3,7 @@
 class suspendmetric(object):
     
     def __init__(self, weight = 1.0):
-        self.weight = max(min(weight,1.0),0.0)
+        self.weight = max(min(float(weight),1.0),0.0)
         self.metric = 0.0
 
     def getSample(self,timeInterval):

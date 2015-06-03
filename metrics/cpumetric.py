@@ -7,8 +7,8 @@ class Metric(suspendmetric.suspendmetric):
     jiffies = [0,0]
     jiffies_old = [0,0]
     
-    def __init__(self,weight):
-        super(Metric,self).__init__(weight)
+    def __init__(self,config):
+        super(Metric,self).__init__(config.get('weight',1))
         
     
     def getSample(self,x):
@@ -22,7 +22,7 @@ class Metric(suspendmetric.suspendmetric):
        return float(cpuave) 
    
     def getUnits(self):
-       return "/1.0"
+       return "/1.000"
 
     def getFormatting(self):
-       return ":>4.3g"
+       return ":4.3f"

@@ -5,8 +5,8 @@ class Metric(suspendmetric.suspendmetric):
     bytes = 0
     bytes_old = 0
     
-    def __init__(self,weight):
-        super(Metric,self).__init__(weight)
+    def __init__(self,config):
+        super(Metric,self).__init__(config.get('weight',1))
     
     def getSample(self,dTime):
         f = open("/proc/net/dev","r")

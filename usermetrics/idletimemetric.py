@@ -38,8 +38,9 @@ class XScreenSaverSession(object):
 
 class Metric(suspendmetric.suspendmetric):
     
-    def __init__(self):
+    def __init__(self,config):
         #This metric class can be simplified since it is run for each user, who each know their own display number.
+        super(Metric,self).__init__(config.get('weight',1))
         self.display = os.environ['DISPLAY']
         self.session = XScreenSaverSession(self.display)
 
@@ -60,7 +61,7 @@ class Metric(suspendmetric.suspendmetric):
         return "sec"
     
     def getFormatting(self):
-        return ":>4"
+        return ":4g"
         
 if __name__ == "__main__":
     s = XScreenSaverSession(sys.argv[1])

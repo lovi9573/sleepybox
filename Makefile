@@ -1,20 +1,20 @@
 USERROOT=$(HOME)/sleepybox
 LIBS=-lImlib2
 LIBS+= -lX11
+PULSELIBS=-lpulse-simple
 
-
-reload: uninstall install
-userreload: userremove userinstall
+reload: service-uninstall service-install
+user-reload: user-uninstall user-install
 
 
 screenshot:
-	$(CC) -fpic -shared -I/usr/include/X11 $(LIBS) screenshot.c -o screenshot.so
+	$(CC) -fpic -shared -I/usr/include/X11 $(LIBS) usermetrics/screenshot.c -o usermetrics/screenshot.so
 	
-pulseaudiosample:
-	$(CC) -fpic -shared -I/usr/include/pulse -lpulse-simple pulseaudiosample.c -o pulseaudiosample.so
+pasample:
+	$(CC) -fpic -shared -I/usr/include/pulse $(PULSELIBS) usermetrics/pulseaudiosample.c -o usermetrics/pasample.so
 
 
-install:
+service-install:
 	###### system service ######
 	mkdir /usr/share/sleepybox
 	cp ./*.py /usr/share/sleepybox
@@ -24,7 +24,7 @@ install:
 	#cp ./metrics/__init__.py /usr/share/sleepybox/metrics
 	mkdir /etc/sleepybox
 	cp sleepybox.conf /etc/sleepybox
-	cp cutoffs /etc/sleepybox
+	cp modules.conf /etc/sleepybox
 	#cp sleepybox.service.evn /etc/sysconfig/sleepybox
 	mkdir /var/log/sleepybox
 	cp sleepybox.service /lib/systemd/system/
@@ -34,32 +34,30 @@ install:
 
 	
 
-userinstall: screenshot
+user-install: screenshot pasample
 	mkdir $(USERROOT)
 	mkdir $(USERROOT)/metrics
 	###### user service ######
-	cp sleepybox.conf $(USERROOT)
-	cp usercutoffs $(USERROOT)/cutoffs
+	#cp sleepybox.conf $(USERROOT)
+	cp usermodules.conf $(USERROOT)/modules.conf
 	cp sleepybox.py $(USERROOT)/
 	cp suspendmetric.py $(USERROOT)/
 	cp utility.py $(USERROOT)/
 	cp config.py $(USERROOT)/
 	cp ./usermetrics/*.py $(USERROOT)/metrics/
-	cp ./screenshot.so $(USERROOT)/metrics/
+	cp ./usermetrics/*.so $(USERROOT)/metrics/
 
 
 	
-uninstall: stop remove userremove
-
-remove:	
+service-uninstall: 
+	-systemctl stop sleepybox.service
 	rm -fR /usr/share/sleepybox
 	rm -fR /etc/sleepybox
 	rm -fR /var/log/sleepybox
 	rm -f /lib/systemd/system/sleepybox.service
 	rm -f /etc/dbus-1/system.d/org.lovi9573.sleepybox.conf	
 
-userremove:
+user-uninstall:
 	rm -rf $(USERROOT)
 
-stop:
-	-systemctl stop sleepybox.service
+

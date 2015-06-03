@@ -3,7 +3,7 @@ import dbus
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 import datetime
-from config import getConfig,getCutoffs
+from config import getConfig,getModuleConfig
 import threading
 import time
 import os
@@ -12,7 +12,7 @@ from subprocess import call
 
 LOGFILE='/var/log/sleepybox/sleepybox.log'
 CONFIGFILE='/etc/sleepybox/sleepybox.conf'
-CUTOFFSFILE='/etc/sleepybox/cutoffs'
+CUTOFFSFILE='/etc/sleepybox/modules.conf'
 
 SLEEP=1
 SCREENOFF=2
@@ -34,13 +34,13 @@ class SleepyBoxService(dbus.service.Object):
     def __init__(self):
         self.vetos = False
         self.config = getConfig(CONFIGFILE)
-        self.cutoffs = getCutoffs(CUTOFFSFILE)
+        self.cutoffs = getModuleConfig(CUTOFFSFILE)
         self.modules = {}
         for modulename in [f.strip(".py") for f in os.listdir("/usr/share/sleepybox/metrics") if (f[-3:] == ".py" and f[:8] != "__init__")]:
             with open(LOGFILE,"a") as fout:
                 fout.write("loading {} \n".format(modulename))
             try:
-                self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric(self.cutoffs[modulename]['weight'])
+                self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric(self.cutoffs[modulename])
             except:
                 with open(LOGFILE,"a") as fout:
                     fout.write("{} unable to load\n".format(modulename)) 
@@ -64,19 +64,19 @@ class SleepyBoxService(dbus.service.Object):
                 #fout.write("reading from {}\n".format(modulename))
                 #fout.flush()
                 try:
-                    v,s = module.getMetric(1) #int(self.config.get("POLLTIME",120)))
-                    cSleep = self.cutoffs.get(modulename,{}).get('sleepcut',0.0)
-                    cScreen = self.cutoffs.get(modulename,{}).get('screencut',0.0)
+                    v,s = module.getMetric(int(self.config.get("POLLTIME",120)))
+                    cSleep = float(self.cutoffs.get(modulename,{}).get('suspend',0.0))
+                    cScreen = float(self.cutoffs.get(modulename,{}).get('screen',0.0))
                     fmt = module.getFormatting()
                     units = module.getUnits()
                     #fout.write("\t{} read\n".format(modulename))
                     #fout.flush()
                     #fout.write(units+" "+fmt+" "+str(cSleep)+" "+str(cScreen)+" "+str(v)+" Checkpoint\n")
                     #fout.flush()
-                    fout.write(("{}:{"+fmt+"}({"+fmt+"}){}[{}/{}];").format(modulename,v,s,units,cSleep,cScreen))
+                    fout.write(("{}:{"+fmt+"}({"+fmt+"}){}[{}/{}] ; ").format(modulename,v,s,units,cSleep,cScreen))
                     sleepcut = v < cSleep
                     screencut = v < cScreen
-                    if self.cutoffs.get(modulename,{}).get('a/b','b') == 'a':
+                    if self.cutoffs.get(modulename,{}).get('when','below') == 'above':
                         sleepcut = not sleepcut
                         screencut = not screencut
                     if not sleepcut:
@@ -126,7 +126,8 @@ class SleepyBoxService(dbus.service.Object):
             for vm in vms:
                 call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])
             #TODO:put back in
-            #self.powerIface.Suspend()
+            if self.config.get('ENABLE',0)==1:
+                self.powerIface.Suspend()
         self.vetos = False
    
 
