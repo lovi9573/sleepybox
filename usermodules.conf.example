@@ -1,0 +1,35 @@
+#Configuration for each module
+#There should be a section for each module begining with the section header: The module name in square brackets
+#	"[" module name "]"
+#Following the module section header a list of key, value pairs follows
+#	key value (whitespace separated)
+#Common keys:
+#	suspend - The value used as a cutoff for suspending the machine
+#	screen - The value used as a cutoff for turning off the screen.
+#	new_weight - The relative value of a new measurement compared to old values.  Default: 1.0,  Range: (0,1]
+#	when - Determines which side of the cutoff is used to take action.  Default: below, Range: [below, above]
+#Module Specific keys:
+#	Some modules will have specific key-values for their operation.  Consult the module documentation
+
+
+[idletimemetric]
+suspend		120
+screen  	120
+new_weight	1.0
+when	 	above
+
+[screenmetric]
+suspend		0.05
+screen	 	0.05
+new_weight 	0.1
+when	 	below
+
+[soundmetric]
+suspend		0.05
+screen		1.0
+new_weight	0.1
+when		below
+sink_name 	alsa_output.pci-0000_00_1b.0.analog-stereo.monitor
+
+[virtualbox]
+vm_name		windows7
