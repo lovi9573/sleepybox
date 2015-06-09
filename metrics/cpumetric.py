@@ -8,7 +8,7 @@ class Metric(suspendmetric.suspendmetric):
     jiffies_old = [0,0]
     
     def __init__(self,config):
-        super(Metric,self).__init__(config.get('weight',1))
+        super(Metric,self).__init__(config.get('new_weight',1))
         
     
     def getSample(self,x):
