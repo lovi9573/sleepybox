@@ -124,21 +124,18 @@ def readConfig():
  
  
 def putKeyVal(module,key,val,config):
-    #TODO: Don't allow repeats
     if module not in config.keys():
         config[module] = {'keys':{}, 'comments': ""} 
     if key not in config[module]['keys'].keys():
         config[module]['keys'][key] =  []
-        config[module]['keys'][key].append({'value':val,'comments': ""})
-        return config
-    config[module]['keys'][key].append({'value': val, 'comments':''})       
+    if val not in [v for v in map(lambda x: x.get('value', ""), config[module]['keys'][key])]:
+        config[module]['keys'][key].append({'value': val, 'comments':''})       
     return config
 
 def setKeyVal(module,key,val,config):
     if module not in config.keys():
         config[module] = {'keys':{}, 'comments': ""} 
-    if key not in config[module]['keys'].keys():
-        config[module]['keys'][key] =  []
+    config[module]['keys'][key] =  []
     config[module]['keys'][key].append({'value':val,'comments': ""})
     return config
 

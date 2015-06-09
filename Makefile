@@ -35,6 +35,7 @@ service-install:
 	
 
 user-install: screenshot pasample
+	python setup.py
 	mkdir $(USERROOT)
 	mkdir $(USERROOT)/metrics
 	###### user service ######
