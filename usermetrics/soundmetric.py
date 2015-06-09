@@ -1,5 +1,6 @@
 import suspendmetric
 import utility
+import os
 # From https://github.com/Valodim/python-pulseaudio
 
 from numpy.ctypeslib import ctypes
@@ -12,7 +13,7 @@ class Metric(suspendmetric.suspendmetric):
         super(Metric,self).__init__(config.get('weight',1))
         self.sink_name = config.get('sink_name','')
         #self.sink_name = "alsa_output.pci-0000_00_1b.0.analog-stereo.monitor"
-        self.padll = ctypes.cdll.LoadLibrary('./metrics/pasample.so')
+        self.padll = ctypes.cdll.LoadLibrary(os.path.join(os.path.dirname(__file__),'pasample.so'))
         self.padll.getPeak.restype = ctypes.c_float
         self.padll.getPeak.argtypes = [ctypes.c_char_p]
         

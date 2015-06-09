@@ -1,5 +1,19 @@
 
 
+Dependencies
+------------
+gcc
+libX11
+libX11 headers
+imlib2
+imlib2 headers
+pulseaudio-libs
+pulseaudio-libs-devel
+
+python PIL
+python ctypes
+libXss
+
 Installation
 ------------
 There are two parts to installation:

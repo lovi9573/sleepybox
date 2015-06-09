@@ -9,14 +9,13 @@ from PIL import Image
 import StringIO
 
 
-LIB='./metrics/screenshot.so'
         
 
 class Metric(suspendmetric.suspendmetric):
     
     def __init__(self,config):
         super(Metric,self).__init__(config.get('weight',1))
-        self.sslib = ctypes.cdll.LoadLibrary(LIB)
+        self.sslib = ctypes.cdll.LoadLibrary(os.path.join(os.path.dirname(__file__),'screenshot.so'))
         self.sslib.init()
         self.sslib.getPixelDiff.restype = ctypes.c_float
         
