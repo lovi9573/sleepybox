@@ -7,6 +7,7 @@ class Metric(suspendmetric.suspendmetric):
     
     def __init__(self,config):
         super(Metric,self).__init__(config.get('new_weight',1))
+	getSample(self,1)
     
     def getSample(self,dTime):
         f = open("/proc/net/dev","r")

@@ -45,8 +45,10 @@ class SleepyBoxService(dbus.service.Object):
                 with open(LOGFILE,"a") as fout:
                     fout.write("{} unable to load\n".format(modulename)) 
         bus=dbus.SystemBus()   
-        powerproxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower",False) 
-        self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.UPower")           
+        #powerproxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower",False) 
+        powerproxy = bus.get_object('org.freedesktop.login1', "/org/freedesktop/login1",False) 
+        #self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.UPower")           
+        self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.login1.Manager.Suspend")           
         bus_name = dbus.service.BusName('org.lovi9573.sleepyboxservice', bus=bus)
         dbus.service.Object.__init__(self, bus_name, '/org/lovi9573/sleepyboxservice')
         self.timer = PerpetualTimer(threading.Event(),int(self.config.get("POLLTIME",120)),self.check)
@@ -124,10 +126,9 @@ class SleepyBoxService(dbus.service.Object):
             #TODO: shutdown the VM's
             vms = [x.strip() for x in self.config.get("VBMACHINE","").split(",") if x.strip() !=""]
             for vm in vms:
-                call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])
-            #TODO:put back in
-            if self.config.get('ENABLE',0)==1:
-                self.powerIface.Suspend()
+                call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])      
+            if self.config.get('ENABLE',0)=="1":
+                self.powerIface.Suspend(True)
         self.vetos = False
    
 
