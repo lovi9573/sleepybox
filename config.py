@@ -7,8 +7,8 @@ def getConfig(f):
 		with open(f,"r") as fin:
 			for line in [x.strip() for x in fin]:
 				if len(line) > 0 and line[0] != "#":
-					i = line.index(" ")
-					config[line[:i]] = line[i+1:]
+					key,val = line.strip().split(" ")
+					config[key] = val
 	return config
 
 def getModuleConfig(f):

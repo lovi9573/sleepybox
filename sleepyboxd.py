@@ -128,7 +128,7 @@ class SleepyBoxService(dbus.service.Object):
             for vm in vms:
                 call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])      
             if self.config.get('ENABLE',0)=="1":
-                self.powerIface.Suspend(True)
+                self.powerIface.Suspend(1)
         self.vetos = False
    
 
