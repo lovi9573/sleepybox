@@ -48,7 +48,7 @@ class SleepyBoxService(dbus.service.Object):
         #powerproxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower",False) 
         powerproxy = bus.get_object('org.freedesktop.login1', "/org/freedesktop/login1",False) 
         #self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.UPower")           
-        self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.login1.Manager.Suspend")           
+        self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.login1.Manager")           
         bus_name = dbus.service.BusName('org.lovi9573.sleepyboxservice', bus=bus)
         dbus.service.Object.__init__(self, bus_name, '/org/lovi9573/sleepyboxservice')
         self.timer = PerpetualTimer(threading.Event(),int(self.config.get("POLLTIME",120)),self.check)
@@ -128,7 +128,7 @@ class SleepyBoxService(dbus.service.Object):
             for vm in vms:
                 call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])      
             if self.config.get('ENABLE',0)=="1":
-                self.powerIface.Suspend(1)
+                self.powerIface.Suspend(True)
         self.vetos = False
    
 
@@ -140,5 +140,8 @@ if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
     myservice = SleepyBoxService()
     myservice.start()
-    loop = gobject.MainLoop()
-    loop.run()
+    while(True):
+        #TODO: put in a 'real' idle loop.
+        time.sleep(120)
+    #loop = gobject.MainLoop()
+    #loop.run()
