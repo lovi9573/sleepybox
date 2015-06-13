@@ -6,8 +6,8 @@ def getConfig(f):
 	if os.path.isfile(f):
 		with open(f,"r") as fin:
 			for line in [x.strip() for x in fin]:
-				if len(line) > 0 and line[0] != "#":
-					key,val = line.strip().split(" ")
+				if len(line.strip()) > 0 and line.strip()[0] != "#":
+					key,val = line.strip().split()
 					config[key] = val
 	return config
 
