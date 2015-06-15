@@ -4,8 +4,8 @@ import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 import datetime
 from config import getConfig,getModuleConfig
-import datetime
 import os
+import time
 from os.path import join
 import sys
 from subprocess import call
@@ -91,7 +91,8 @@ class SleepyBoxUserService(dbus.service.Object):
             fout.write("[{}] Initiating Screen Shutdown \n".format(datetime.datetime.now().__str__() ))
         #TODO: shutdown screen
         if self.config.get('ENABLE',0) == '1':
-            self.screenIface.Lock()
+            #self.screenIface.Lock()
+            call(["xset", "dpms", "force", "standby"])
 
 
 if __name__ == "__main__":
@@ -100,5 +101,8 @@ if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
     myservice = SleepyBoxUserService()
     gobject.threads_init()
-    loop = gobject.MainLoop()
-    loop.run()
+    while(True):
+        #TODO: put in a 'real' idle loop.
+        time.sleep(120)   
+    #loop = gobject.MainLoop()
+    #loop.run()
