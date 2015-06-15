@@ -88,7 +88,7 @@ float getPixelDiff(){
 	makeDiffImage();
 	imlib_context_set_image(im_old);
 #ifdef DEBUG
-	imlib_save_image("diffimage")
+	imlib_save_image("diffimage");
 #endif
 	int n = imlib_image_get_width()* imlib_image_get_height();
 	DATA32 *dat_diff = imlib_image_get_data(); //32 bits per pixel ARGB format.
