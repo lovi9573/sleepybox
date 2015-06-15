@@ -58,12 +58,29 @@ static void makeDiffImage(){
 	if(!im_old){
 		im_old = getScreenShot();
 	}
-	imlib_context_set_image(im_old);
 	im_new = getScreenShot();
+	Imlib_Image diff = imlib_clone_image();
+//Right direction image difference
+	imlib_context_set_image(diff);
+	imlib_context_set_operation(IMLIB_OP_SUBTRACT);
+	imlib_blend_image_onto_image(	im_old,0,
+									0,0,imlib_image_get_width(),imlib_image_get_height(),
+									0,0,imlib_image_get_width(),imlib_image_get_height());
+
+
+//Left direction image difference
+	imlib_context_set_image(im_old);
 	imlib_context_set_operation(IMLIB_OP_SUBTRACT);
 	imlib_blend_image_onto_image(	im_new,0,
 									0,0,imlib_image_get_width(),imlib_image_get_height(),
 									0,0,imlib_image_get_width(),imlib_image_get_height());
+//Sum the two diff's
+	imlib_context_set_operation(IMLIB_OP_ADD);
+	imlib_blend_image_onto_image(	diff,0,
+									0,0,imlib_image_get_width(),imlib_image_get_height(),
+									0,0,imlib_image_get_width(),imlib_image_get_height());
+	imlib_context_set_image(diff);
+	imlib_free_image();
 }
 
 DATA32 *getDiffImageData(){
