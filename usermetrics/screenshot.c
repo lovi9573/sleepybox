@@ -88,6 +88,7 @@ float getPixelDiff(){
 	makeDiffImage();
 	imlib_context_set_image(im_old);
 #ifdef DEBUG
+	imlib_image_set_format("jpg");
 	imlib_save_image("diffimage");
 #endif
 	int n = imlib_image_get_width()* imlib_image_get_height();
