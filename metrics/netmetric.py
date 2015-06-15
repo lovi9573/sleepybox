@@ -27,5 +27,5 @@ class Metric(suspendmetric.suspendmetric):
         return "ave kB/s"
     
     def getFormatting(self):
-        return ":>5.0g"
+        return ":>5.0f"
     

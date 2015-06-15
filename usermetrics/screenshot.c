@@ -61,7 +61,7 @@ static void makeDiffImage(){
 	imlib_context_set_image(im_old);
 	im_new = getScreenShot();
 	imlib_context_set_operation(IMLIB_OP_SUBTRACT);
-	imlib_blend_image_onto_image(im_new,0,
+	imlib_blend_image_onto_image(	im_new,0,
 									0,0,imlib_image_get_width(),imlib_image_get_height(),
 									0,0,imlib_image_get_width(),imlib_image_get_height());
 }
@@ -87,6 +87,9 @@ DATA32 *getDiffImageData(){
 float getPixelDiff(){
 	makeDiffImage();
 	imlib_context_set_image(im_old);
+#ifdef DEBUG
+	imlib_save_image("diffimage")
+#endif
 	int n = imlib_image_get_width()* imlib_image_get_height();
 	DATA32 *dat_diff = imlib_image_get_data(); //32 bits per pixel ARGB format.
 	int i;

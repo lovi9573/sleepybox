@@ -8,7 +8,7 @@ user-reload: user-uninstall user-install
 
 
 screenshot:
-	$(CC) -fpic -shared -I/usr/include/X11 $(LIBS) usermetrics/screenshot.c -o usermetrics/screenshot.so
+	$(CC) -fpic -shared -I/usr/include/X11 $(LIBS) -DDEBUG usermetrics/screenshot.c -o usermetrics/screenshot.so
 	
 pasample:
 	$(CC) -fpic -shared -I/usr/include/pulse $(PULSELIBS) usermetrics/pulseaudiosample.c -o usermetrics/pasample.so

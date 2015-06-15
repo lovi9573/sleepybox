@@ -48,8 +48,8 @@ class SleepyBoxUserService(dbus.service.Object):
 
 
     def check(self,t):
-        with open(USERLOGFILE,"a") as fout:
-            fout.write("check\n")
+        #with open(USERLOGFILE,"a") as fout:
+        #    fout.write("check\n")
         sleep = True
         screenoff = True
         with open(USERLOGFILE,"a") as fout:
@@ -90,7 +90,7 @@ class SleepyBoxUserService(dbus.service.Object):
         with open(USERLOGFILE,"a") as fout:
             fout.write("[{}] Initiating Screen Shutdown \n".format(datetime.datetime.now().__str__() ))
         #TODO: shutdown screen
-        if self.config.get('ENABLE',0) == 1:
+        if self.config.get('ENABLE',0) == '1':
             self.screenIface.Lock()
 
 
