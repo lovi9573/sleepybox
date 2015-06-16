@@ -53,7 +53,7 @@ class SleepyBoxUserService(dbus.service.Object):
         sleep = True
         screenoff = True
         with open(USERLOGFILE,"a") as fout:
-            fout.write("[{}]\n\t".format(datetime.datetime.now().__str__() ))
+            fout.write("\n[{}]\n\t".format(datetime.datetime.now().__str__() ))
             for modulename, module in [(a,b) for a,b in self.modules.iteritems() if a in self.cutoffs.keys()]:
                 #fout.write("reading from {}\n".format(modulename))
                 #fout.flush()
@@ -78,8 +78,11 @@ class SleepyBoxUserService(dbus.service.Object):
                 except:
                     fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
                     del self.modules[modulename]
-            if not sleep and t == SLEEP:
-                self.serviceIface.veto(getpass.getuser())
+            if t == SLEEP:
+                if not sleep:
+                    self.serviceIface.veto(getpass.getuser())
+                else:
+                    self.serviceIface.accept(getpass.getuser())
             elif screenoff:
                 self.doScreenOff()
             #fout.write("ending check\n")

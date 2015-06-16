@@ -33,6 +33,7 @@ class PerpetualTimer(threading.Thread):
 class SleepyBoxService(dbus.service.Object):
     def __init__(self):
         self.vetos = False
+        self.responses = 0
         self.config = getConfig(CONFIGFILE)
         self.cutoffs = getModuleConfig(CUTOFFSFILE)
         self.modules = {}
@@ -90,13 +91,13 @@ class SleepyBoxService(dbus.service.Object):
                     del self.modules[modulename]
             if sleep:
                 fout.write(" => Sleep requested\n")
-                #threading.Timer(int(self.config.get("VETOTIME",20)), self.doSleep).start()        
+                #threading.Timer(int(self.config.get("RESPONSETIME",20)), self.doSleep).start()        
                 self.signal(SLEEP)
-                time.sleep(int(self.config.get("VETOTIME",20)))
+                time.sleep(int(self.config.get("RESPONSETIME",20)))
                 self.doSleep()
             elif screenoff:
                 fout.write(" => Screen shutdown signalled\n")
-                #threading.Timer(int(self.config.get("VETOTIME",20)), self.doScreenOff).start()        
+                #threading.Timer(int(self.config.get("RESPONSETIME",20)), self.doScreenOff).start()        
                 self.signal(SCREENOFF) 
             else:
                 fout.write("\n")
@@ -109,6 +110,12 @@ class SleepyBoxService(dbus.service.Object):
         with open(LOGFILE,"a") as fout:
             fout.write("[{}] Sleep veto'd by {}\n".format(datetime.datetime.now().__str__() , who))
         self.vetos = True
+        
+    @dbus.service.method('org.lovi9573.sleepyboxservice')
+    def accept(self,who):
+        with open(LOGFILE,"a") as fout:
+            fout.write("[{}] Sleep accepted by {}\n".format(datetime.datetime.now().__str__() , who))
+        self.responses += 1
 
     @dbus.service.method('org.freedesktop.DBus.Introspectable')
     def Introspect(self, object_path, connection):
@@ -119,10 +126,11 @@ class SleepyBoxService(dbus.service.Object):
         pass
 
     def doSleep(self):
-        if not self.vetos:
+        if not self.vetos and self.responses >= int(self.config.get('REQUIRED_RESPONSES', '0')):
             with open(LOGFILE,"a") as fout:
                 fout.write("[{}] Initiating Sleep \n".format(datetime.datetime.now().__str__() ))
             self.vetos = False
+            self.responses = 0
             #TODO: shutdown the VM's
             vms = [x.strip() for x in self.config.get("VBMACHINE","").split(",") if x.strip() !=""]
             for vm in vms:
@@ -130,6 +138,7 @@ class SleepyBoxService(dbus.service.Object):
             if self.config.get('ENABLE',0)=="1":
                 self.powerIface.Suspend(True)
         self.vetos = False
+        self.responses = 0
    
 
 
