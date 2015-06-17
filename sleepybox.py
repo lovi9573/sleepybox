@@ -78,9 +78,12 @@ class SleepyBoxUserService(dbus.service.Object):
                 except:
                     fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
                     del self.modules[modulename]
+	    #TODO: fix this section
             if t == SLEEP:
                 if not sleep:
                     self.serviceIface.veto(getpass.getuser())
+		    if screenoff:
+			self.doScreenOff()
                 else:
                     self.serviceIface.accept(getpass.getuser())
             elif screenoff:
