@@ -59,6 +59,7 @@ static void makeDiffImage(){
 		im_old = getScreenShot();
 	}
 	im_new = getScreenShot();
+	imlib_context_set_image(im_new);
 	Imlib_Image diff = imlib_clone_image();
 //Right direction image difference
 	imlib_context_set_image(diff);

@@ -53,7 +53,7 @@ class SleepyBoxUserService(dbus.service.Object):
         sleep = True
         screenoff = True
         with open(USERLOGFILE,"a") as fout:
-            fout.write("\n[{}]\n\t".format(datetime.datetime.now().__str__() ))
+            fout.write("\n[{}]  ".format(datetime.datetime.now().__str__() ))
             for modulename, module in [(a,b) for a,b in self.modules.iteritems() if a in self.cutoffs.keys()]:
                 #fout.write("reading from {}\n".format(modulename))
                 #fout.flush()
@@ -104,8 +104,8 @@ if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
     myservice = SleepyBoxUserService()
     gobject.threads_init()
-    while(True):
+    #while(True):
         #TODO: put in a 'real' idle loop.
-        time.sleep(120)   
-    #loop = gobject.MainLoop()
-    #loop.run()
+        #time.sleep(120)   
+    loop = gobject.MainLoop()
+    loop.run()

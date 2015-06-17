@@ -62,7 +62,7 @@ class SleepyBoxService(dbus.service.Object):
         sleep = True
         screenoff = True
         with open(LOGFILE,"a") as fout:
-            fout.write("[{}]\n\t".format(datetime.datetime.now().__str__() ))
+            fout.write("[{}]  ".format(datetime.datetime.now().__str__() ))
             for modulename, module in [(a,b) for a,b in self.modules.iteritems() if a in self.cutoffs.keys()]:
                 #fout.write("reading from {}\n".format(modulename))
                 #fout.flush()
@@ -93,8 +93,8 @@ class SleepyBoxService(dbus.service.Object):
                 fout.write(" => Sleep requested\n")
                 #threading.Timer(int(self.config.get("RESPONSETIME",20)), self.doSleep).start()        
                 self.signal(SLEEP)
-                time.sleep(int(self.config.get("RESPONSETIME",20)))
-                self.doSleep()
+                #time.sleep(int(self.config.get("RESPONSETIME",20)))
+                #self.doSleep()
             elif screenoff:
                 fout.write(" => Screen shutdown signalled\n")
                 #threading.Timer(int(self.config.get("RESPONSETIME",20)), self.doScreenOff).start()        
@@ -149,8 +149,8 @@ if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
     myservice = SleepyBoxService()
     myservice.start()
-    while(True):
+    #while(True):
         #TODO: put in a 'real' idle loop.
-        time.sleep(120)
-    #loop = gobject.MainLoop()
-    #loop.run()
+        #time.sleep(120)
+    loop = gobject.MainLoop()
+    loop.run()
