@@ -91,7 +91,7 @@ class SleepyBoxService(dbus.service.Object):
                     del self.modules[modulename]
             if sleep:
                 fout.write(" => Sleep requested\n")
-                #threading.Timer(int(self.config.get("RESPONSETIME",20)), self.doSleep).start()        
+                threading.Timer(int(self.config.get("RESPONSETIME",20)), self.doSleep).start()        
                 self.signal(SLEEP)
                 #time.sleep(int(self.config.get("RESPONSETIME",20)))
                 #self.doSleep()
