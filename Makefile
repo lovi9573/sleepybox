@@ -47,6 +47,7 @@ user-install: screenshot pasample
 	cp config.py $(USERROOT)/
 	cp ./usermetrics/*.py $(USERROOT)/metrics/
 	cp ./usermetrics/*.so $(USERROOT)/metrics/
+	python $(USERROOT)/sleepybox.py &
 
 
 	

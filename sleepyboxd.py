@@ -131,7 +131,6 @@ class SleepyBoxService(dbus.service.Object):
                 fout.write("[{}] Initiating Sleep \n".format(datetime.datetime.now().__str__() ))
             self.vetos = False
             self.responses = 0
-            #TODO: shutdown the VM's
             vms = [x.strip() for x in self.config.get("VBMACHINE","").split(",") if x.strip() !=""]
             for vm in vms:
                 call(["VBoxManage"," controlvm {} savestate &> {}".format(vm,LOGFILE)])      

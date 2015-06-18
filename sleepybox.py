@@ -5,6 +5,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 import datetime
 from config import getConfig,getModuleConfig
 import os
+import signal
 import time
 from os.path import join
 import sys
@@ -17,6 +18,7 @@ USERLOGFILE=join(HOME,'sleepybox/sleepybox.log')
 CONFIGFILE=join('/etc/sleepybox/sleepybox.conf')
 CUTOFFSFILE=join(HOME,'sleepybox/modules.conf')
 METRICSPATH = join(HOME,'sleepybox/metrics')
+PIDFILE = join(HOME,'sleepybox/pid')
 
 SLEEP=1
 SCREENOFF=2
@@ -48,8 +50,6 @@ class SleepyBoxUserService(dbus.service.Object):
 
 
     def check(self,t):
-        #with open(USERLOGFILE,"a") as fout:
-        #    fout.write("check\n")
         sleep = True
         screenoff = True
         with open(USERLOGFILE,"a") as fout:
@@ -79,19 +79,21 @@ class SleepyBoxUserService(dbus.service.Object):
                     fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
                     del self.modules[modulename]
             if t == SLEEP:
-                if not sleep:
-                    self.serviceIface.veto(getpass.getuser())
-                else:
+                if sleep:
                     self.serviceIface.accept(getpass.getuser())
-            elif screenoff:
-                self.doScreenOff()
-            #fout.write("ending check\n")
+                else:
+                    self.serviceIface.veto(getpass.getuser())
+                if screenoff:
+                    self.doScreenOff()
+            elif t == SCREENOFF:
+                if screenoff:
+                    self.doScreenOff()
         
 
    
     def doScreenOff(self):
         with open(USERLOGFILE,"a") as fout:
-            fout.write("[{}] Initiating Screen Shutdown \n".format(datetime.datetime.now().__str__() ))
+            fout.write("\n[{}] Initiating Screen Shutdown \n".format(datetime.datetime.now().__str__() ))
         #TODO: shutdown screen
         if self.config.get('ENABLE',0) == '1':
             #self.screenIface.Lock()
@@ -99,6 +101,13 @@ class SleepyBoxUserService(dbus.service.Object):
 
 
 if __name__ == "__main__":
+    if os.path.isfile(PIDFILE):
+        pid = -1
+        with open(PIDFILE,"r") as fin:
+            pid = int(fin.readLine())
+        os.kill(pid, signal.SIGKILL)
+    with open(PIDFILE,'w') as fout:
+        fout.write(str(os.getpid()));
     with open(USERLOGFILE,'w') as fout:
         fout.write("[{}] Starting sleepybox service user daemon \n".format(datetime.datetime.now().__str__() ))
     DBusGMainLoop(set_as_default=True)

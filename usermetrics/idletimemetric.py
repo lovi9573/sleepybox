@@ -45,16 +45,6 @@ class Metric(suspendmetric.suspendmetric):
         self.session = XScreenSaverSession(self.display)
 
     def getSample(self,x):
-        '''idletime = 10000000
-        displays = utility.getXSessionAuths()
-        for user,displayCreds in displays.items():
-            #TODO: dynamically find this file 
-            #subprocess.call(["xauth","extract /usr/share/sleepybox/metrics/userxauth "+display])
-            #subprocess.call(["xauth","merge /usr/share/sleepybox/metrics/userxauth"])
-            os.environ['XAUTHORITY'] = displayCreds["xauthority"]
-            s = XScreenSaverSession(displayCreds["display"])
-            idletime = min(idletime, s.get_idle())
-            s.close()'''
         return self.session.get_idle()
     
     def getUnits(self):

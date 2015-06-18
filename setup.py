@@ -30,7 +30,6 @@ def getNetworkInterfaces():
 
 
 def getPulseAudioSources():
-    #TODO: This doesn't quite work right.
     #Get sound channel to monitor
     channels = {}
     tmp = subprocess.check_output(["pactl","list"])    
