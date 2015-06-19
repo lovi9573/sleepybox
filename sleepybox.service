@@ -13,4 +13,4 @@ ExecStart=/usr/bin/python /usr/share/sleepybox/sleepyboxd.py
 ExecReload=/usr/bin/python /usr/share/sleepybox/sleepyboxd.py
 
 [Install]
-#WantedBy=graphical.target
+WantedBy=graphical.target

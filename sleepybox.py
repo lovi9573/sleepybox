@@ -104,7 +104,7 @@ if __name__ == "__main__":
     if os.path.isfile(PIDFILE):
         pid = -1
         with open(PIDFILE,"r") as fin:
-            pid = int(fin.readLine())
+            pid = int(fin.readline())
         os.kill(pid, signal.SIGKILL)
     with open(PIDFILE,'w') as fout:
         fout.write(str(os.getpid()));
