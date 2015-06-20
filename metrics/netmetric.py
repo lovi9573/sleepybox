@@ -6,10 +6,11 @@ class Metric(suspendmetric.suspendmetric):
     bytes_old = 0
     
     def __init__(self,config):
-        super(Metric,self).__init__(config.get('new_weight',1))
-        self.getSample(1)
+        self.config = config
+        super(Metric,self).__init__()
+        self.getSample()
     
-    def getSample(self,dTime):
+    def getSample(self):
         with open("/proc/net/dev","r") as f:
             f.readline()
             f.readline()
@@ -21,7 +22,7 @@ class Metric(suspendmetric.suspendmetric):
                 line = f.readline()
         dBytes = self.bytes - self.bytes_old
         self.bytes_old = self.bytes
-        return float(dBytes/1024/dTime)
+        return float(dBytes/1024/int(self.config.get('POLLTIME',1)))
     
     def getUnits(self):
         return "ave kB/s"

@@ -40,11 +40,12 @@ class Metric(suspendmetric.suspendmetric):
     
     def __init__(self,config):
         #This metric class can be simplified since it is run for each user, who each know their own display number.
-        super(Metric,self).__init__(config.get('new_weight',1))
+        self.config = config
+        super(Metric,self).__init__()
         self.display = os.environ['DISPLAY']
         self.session = XScreenSaverSession(self.display)
 
-    def getSample(self,x):
+    def getSample(self):
         return self.session.get_idle()
     
     def getUnits(self):

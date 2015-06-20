@@ -37,7 +37,7 @@ class SleepyBoxUserService(dbus.service.Object):
                 self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric(self.cutoffs[modulename])
             except:
                 with open(USERLOGFILE,"a") as fout:
-                    fout.write("{} unable to load\n".format(modulename)) 
+                    fout.write("{} unable to load: {}\n".format(modulename,traceback.format_exc())) 
                     #fout.write(str(sys.exc_info()[0])) 
                     traceback.print_exc(file = fout)
         bus = dbus.SystemBus()
@@ -58,7 +58,7 @@ class SleepyBoxUserService(dbus.service.Object):
                 #fout.write("reading from {}\n".format(modulename))
                 #fout.flush()
                 try:
-                    v,s = module.getMetric(int(self.config.get("POLLTIME",120)))
+                    v,s = module.getMetric()
                     cSleep = float(self.cutoffs.get(modulename,{}).get('suspend',0.0))
                     cScreen = float(self.cutoffs.get(modulename,{}).get('screen',0.0))
                     fmt = module.getFormatting()
@@ -76,7 +76,7 @@ class SleepyBoxUserService(dbus.service.Object):
                     if not screencut:
                         screenoff = False
                 except:
-                    fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,sys.exc_info()[0]))
+                    fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,traceback.format_exc()))
                     del self.modules[modulename]
             if t == SLEEP:
                 if sleep:

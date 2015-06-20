@@ -44,9 +44,10 @@ service-stop:
 	systemctl disable sleepybox.service
 	
 service-files-remove:
-	rm -fR /usr/share/sleepybox/*
-	rm -fR /etc/sleepybox/*
-	rm -fR /var/log/sleepybox/*
+	rm -f /usr/share/sleepybox/modules/*
+	rm -f /usr/share/sleepybox/*.py
+	rm -f /etc/sleepybox/*
+	rm -f /var/log/sleepybox/*
 	rm -f /lib/systemd/system/sleepybox.service
 	rm -f /etc/dbus-1/system.d/org.lovi9573.sleepybox.conf
 	

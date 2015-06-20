@@ -8,10 +8,11 @@ class Metric(suspendmetric.suspendmetric):
     jiffies_old = [0,0]
     
     def __init__(self,config):
-        super(Metric,self).__init__(config.get('new_weight',1))
+        self.config = config
+        super(Metric,self).__init__()
         
     
-    def getSample(self,x):
+    def getSample(self):
        f = open("/proc/stat","r")
        js = map(int, f.readline().split()[1:])
        self.jiffies[1] += sum(js)

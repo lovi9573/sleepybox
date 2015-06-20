@@ -14,13 +14,14 @@ import StringIO
 class Metric(suspendmetric.suspendmetric):
     
     def __init__(self,config):
-        super(Metric,self).__init__(config.get('new_weight',1))
+        self.config = config
+        super(Metric,self).__init__()
         self.sslib = ctypes.cdll.LoadLibrary(os.path.join(os.path.dirname(__file__),'screenshot.so'))
         self.sslib.init()
         self.sslib.getPixelDiff.restype = ctypes.c_float
         
 
-    def getSample(self,x):
+    def getSample(self):
         return self.sslib.getPixelDiff()
     
     def getUnits(self):

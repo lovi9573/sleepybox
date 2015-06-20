@@ -1,17 +1,20 @@
-
+import math
 
 class suspendmetric(object):
     
-    def __init__(self, weight = 1.0):
-        self.weight = max(min(float(weight),1.0),0.0)
+    def __init__(self):
+        self.weight = max(min(float(self.config.get('new_weight',1)),1.0),0.0)
+        self.t = int(self.config.get('POLLTIME',1))
         self.metric = 0.0
 
-    def getSample(self,timeInterval):
+    def getSample(self):
         return 0.0
     
-    def getMetric(self, timeInterval):
-        s = self.getSample(timeInterval)
-        self.metric = (1.0-self.weight)*self.metric + self.weight*s
+    def getMetric(self):
+        s = self.getSample()  
+        w_old = math.pow((1.0-self.weight),self.t)
+        w_new = 1.0 - w_old
+        self.metric = w_new*s + w_old*self.metric  
         return self.metric,s
         
     def getUnits(self):
