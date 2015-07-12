@@ -128,7 +128,7 @@ DATA32 *getDiffImageData(){
 }
 */
 
-float getPixelDiff(){
+int getPixelDiff(float* d){
 	int err = makeDiffImage();
 	if(err){
 		return err;
@@ -148,7 +148,8 @@ float getPixelDiff(){
 		diff = diff + abs( (dat_diff[i] >> 16) & 0x000000FF); //Red Channel
 	}
 	rotateOutOldImage();
-	return ((float)diff)/((float)(n*255*3));
+	*d = ((float)diff)/((float)(n*255*3));
+	return 0;
 }
 
 

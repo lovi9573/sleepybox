@@ -1,5 +1,7 @@
 *.pyc
 .*
 *.so
-*.conf
+modules.conf
+usermodules.conf
+sleepybox.conf
 

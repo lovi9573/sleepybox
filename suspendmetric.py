@@ -25,3 +25,6 @@ class suspendmetric(object):
     
     def setup(self):
         pass
+    
+    def report(self):
+        pass
