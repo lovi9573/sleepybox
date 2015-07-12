@@ -129,8 +129,9 @@ DATA32 *getDiffImageData(){
 */
 
 float getPixelDiff(){
-	if(makeDiffImage()){
-		return -1;
+	int err = makeDiffImage();
+	if(err){
+		return err;
 	}
 	imlib_context_set_image(im_old);
 #ifdef DEBUG

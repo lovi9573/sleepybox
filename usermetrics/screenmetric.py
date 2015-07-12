@@ -27,7 +27,7 @@ class Metric(suspendmetric.suspendmetric):
     def getSample(self):
         x = self.sslib.getPixelDiff()
         if x < 0:
-            raise RuntimeError
+            raise RuntimeError("error#:"+str(x))
         return x
     
     def getUnits(self):

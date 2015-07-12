@@ -77,8 +77,9 @@ class SleepyBoxUserService(dbus.service.Object):
                         sleep = False
                     if not screencut:
                         screenoff = False
-                except:
+                except Exception as e:
                     fout.write("Error encountered while processing {}\n\t{}\n".format(modulename,traceback.format_exc()))
+                    fout.write("{}\n".format(str(e)))
                     del self.modules[modulename]
             if t == SLEEP:
                 if sleep:
