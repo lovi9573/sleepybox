@@ -18,7 +18,10 @@ class Metric(suspendmetric.suspendmetric):
         
     
     def getSample(self):
-       return self.padll.getPeak(self.sink_name)
+        x = self.padll.getPeak(self.sink_name)
+        if x < 0:
+            raise RuntimeError
+        return x
 
    
     def getUnits(self):

@@ -30,14 +30,24 @@ static void rotateOutOldImage(){
 }
 
 
-void init(){
+int init(){
 	disp = XOpenDisplay(NULL);  //NULL here opens the display in environment var DISPLAY
+	if(!disp){
+		return -1;
+	}
 	scr = ScreenOfDisplay(disp,DefaultScreen(disp));
+	if(!scr){
+		return -2;
+	}
 	int scrnum = XScreenNumberOfScreen(scr);
     vis = DefaultVisual(disp, scrnum);
+	if(!vis){
+		return -3;
+	}
     depth = DefaultDepth(disp,scrnum);
     cm = DefaultColormap(disp, scrnum);
 	root = RootWindow(disp, scrnum);
+	return 0;
 }
 
 static Imlib_Image getScreenShot(){
@@ -54,13 +64,26 @@ static Imlib_Image getScreenShot(){
 }
 //Get this im image into python....
 
-static void makeDiffImage(){
+/*
+ * sets im_old to a new scree
+ * Return on success, <0 on failure
+ */
+static int makeDiffImage(){
 	if(!im_old){
 		im_old = getScreenShot();
 	}
+	if(!im_old){
+		return -1;
+	}
 	im_new = getScreenShot();
+	if(!im_new){
+		return -2;
+	}
 	imlib_context_set_image(im_new);
 	Imlib_Image diff = imlib_clone_image();
+	if(!diff){
+		return -3;
+	}
 //Right direction image difference
 	imlib_context_set_image(diff);
 	imlib_context_set_operation(IMLIB_OP_SUBTRACT);
@@ -84,8 +107,11 @@ static void makeDiffImage(){
 	imlib_free_image();
 }
 
+/*
 DATA32 *getDiffImageData(){
-	makeDiffImage();
+	if(makeDiffImage()){
+		return NULL;
+	}
 	imlib_context_set_image(im_old);
 	int n = imlib_image_get_width()* imlib_image_get_height();
 	DATA32 *old_diff = imlib_image_get_data(); //32 bits per pixel ARGB format.
@@ -100,10 +126,12 @@ DATA32 *getDiffImageData(){
 	rotateOutOldImage();
 	return diff_data;
 }
-
+*/
 
 float getPixelDiff(){
-	makeDiffImage();
+	if(makeDiffImage()){
+		return -1;
+	}
 	imlib_context_set_image(im_old);
 #ifdef DEBUG
 	imlib_image_set_format("jpg");

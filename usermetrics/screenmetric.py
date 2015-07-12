@@ -17,12 +17,18 @@ class Metric(suspendmetric.suspendmetric):
         self.config = config
         super(Metric,self).__init__()
         self.sslib = ctypes.cdll.LoadLibrary(os.path.join(os.path.dirname(__file__),'screenshot.so'))
-        self.sslib.init()
+        self.sslib.init.restype = ctypes.c_int
+        err = self.sslib.init()
+        if err != 0:
+            raise RuntimeError
         self.sslib.getPixelDiff.restype = ctypes.c_float
         
 
     def getSample(self):
-        return self.sslib.getPixelDiff()
+        x = self.sslib.getPixelDiff()
+        if x < 0:
+            raise RuntimeError
+        return x
     
     def getUnits(self):
         return "/1.000"
