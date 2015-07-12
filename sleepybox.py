@@ -15,6 +15,7 @@ import traceback
 
 HOME = os.getenv('HOME')
 USERLOGFILE=join(HOME,'sleepybox/sleepybox.log')
+USERERRFILE=join(HOME,'sleepybox/error.log')
 CONFIGFILE=join('/etc/sleepybox/sleepybox.conf')
 CUTOFFSFILE=join(HOME,'sleepybox/modules.conf')
 METRICSPATH = join(HOME,'sleepybox/metrics')
@@ -35,9 +36,10 @@ class SleepyBoxUserService(dbus.service.Object):
                 fout.write("loading {}\n".format(modulename))
             try:
                 self.modules[modulename] = __import__("metrics."+modulename,globals(),locals(),['Metric'], -1).Metric(self.cutoffs[modulename])
-            except:
+            except Exception as e:
                 with open(USERLOGFILE,"a") as fout:
-                    fout.write("{} unable to load: {}\n".format(modulename,traceback.format_exc())) 
+                    fout.write("{} unable to load: {}\n".format(modulename,traceback.format_exc()))
+                    fout.write("{} \n".format(str(e)))  
                     #fout.write(str(sys.exc_info()[0])) 
                     traceback.print_exc(file = fout)
         bus = dbus.SystemBus()
@@ -105,7 +107,11 @@ if __name__ == "__main__":
         pid = -1
         with open(PIDFILE,"r") as fin:
             pid = int(fin.readline())
-        os.kill(pid, signal.SIGKILL)
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except:
+            with open(USERERRFILE,'w') as fout:
+                fout.write("[{}] Stale PID file found. Existing sleepybox service not stopped. \n".format(datetime.datetime.now().__str__() ))
     with open(PIDFILE,'w') as fout:
         fout.write(str(os.getpid()));
     with open(USERLOGFILE,'w') as fout:
