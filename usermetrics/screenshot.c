@@ -105,6 +105,7 @@ static int makeDiffImage(){
 									0,0,imlib_image_get_width(),imlib_image_get_height());
 	imlib_context_set_image(diff);
 	imlib_free_image();
+	return 0;
 }
 
 /*
