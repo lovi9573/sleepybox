@@ -31,7 +31,7 @@ class Metric(suspendmetric.suspendmetric):
         err = self.sslib.getPixelDiff(ctypes.byref(self.diff))
         if err != 0:
             raise RuntimeError("error#:"+str(err))
-        return self.diff
+        return self.diff.value
     
     def getUnits(self):
         return "/1.000"
