@@ -21,7 +21,7 @@ class XScreenSaverSession(object):
         self.xlib = ctypes.cdll.LoadLibrary( '/usr/lib64/libX11.so.6')
         self.dpy = self.xlib.XOpenDisplay(display_num)
         if not self.dpy:
-            raise Exception("Cannot open display " + display_num +"\n"+ str(utility.getXSessionAuths()))
+            raise Exception("Cannot open display " + display_num +"\n")
         self.root = self.xlib.XDefaultRootWindow( self.dpy)
         self.xss = ctypes.cdll.LoadLibrary( 'libXss.so.1')
         self.xss.XScreenSaverAllocInfo.restype = ctypes.POINTER(XScreenSaverInfo)

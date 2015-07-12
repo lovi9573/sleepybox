@@ -1,0 +1,14 @@
+[Unit]
+Description=Smart suspend service user daemon
+After=default.target
+#Requires=graphical.target
+
+
+[Service]
+Type=simple
+Environment="PYTHONPATH=/usr/share/sleepybox"
+ExecStart=/usr/bin/python %h/sleepybox/sleepybox.py
+ExecReload=/usr/bin/python %h/sleepybox/sleepybox.py
+
+[Install]
+WantedBy=default.target

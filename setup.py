@@ -10,7 +10,7 @@ import os
 from os.path import expanduser
 import re
 
-CONFIG_FILE = "usermodules.conf"
+CONFIG_FILE = "user/usermodules.conf"
 
 def getNetworkInterfaces():
     #Get network interface names and addresses
@@ -146,3 +146,14 @@ if __name__ == "__main__":
         config = putKeyVal('virtualbox', 'vm_name', vm, config)
     writeConfig(config) 
     print "\nSettings written to ", CONFIG_FILE
+    
+    #write systemd daemon to .profile
+    found = False
+    with open(os.path.join(os.getenv("HOME", ""),".bash_profile"), "r") as fin:
+        for line in fin:
+            if line == "systemd --user &":
+                found = True
+    if not found:
+        with open(os.path.join(os.getenv("HOME", ""),".bash_profile"), "a") as fout:
+            fout.write("# Start the systemd user daemon to at least manage sleepybox\n")
+            fout.write("systemd --user &\n")
