@@ -21,7 +21,7 @@ class Metric(suspendmetric.suspendmetric):
         self.sslib.init.restype = ctypes.c_int
         err = self.sslib.init()
         if err != 0:
-            raise RuntimeError(str(err))
+            raise RuntimeError("Error#: "+str(err))
         self.sslib.getPixelDiff.restype = ctypes.c_int
         self.sslib.getPixelDiff.argtypes = [POINTER(c_float)]
         self.diff = ctypes.c_float()

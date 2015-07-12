@@ -33,16 +33,16 @@ static void rotateOutOldImage(){
 int init(){
 	disp = XOpenDisplay(NULL);  //NULL here opens the display in environment var DISPLAY
 	if(!disp){
-		return -1;
+		return 1;
 	}
 	scr = ScreenOfDisplay(disp,DefaultScreen(disp));
 	if(!scr){
-		return -2;
+		return 2;
 	}
 	int scrnum = XScreenNumberOfScreen(scr);
     vis = DefaultVisual(disp, scrnum);
 	if(!vis){
-		return -3;
+		return 3;
 	}
     depth = DefaultDepth(disp,scrnum);
     cm = DefaultColormap(disp, scrnum);
@@ -73,16 +73,16 @@ static int makeDiffImage(){
 		im_old = getScreenShot();
 	}
 	if(!im_old){
-		return -1;
+		return 1;
 	}
 	im_new = getScreenShot();
 	if(!im_new){
-		return -2;
+		return 2;
 	}
 	imlib_context_set_image(im_new);
 	Imlib_Image diff = imlib_clone_image();
 	if(!diff){
-		return -3;
+		return 3;
 	}
 //Right direction image difference
 	imlib_context_set_image(diff);
