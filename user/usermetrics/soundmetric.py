@@ -1,5 +1,4 @@
 import suspendmetric
-import utility
 import os
 # From https://github.com/Valodim/python-pulseaudio
 

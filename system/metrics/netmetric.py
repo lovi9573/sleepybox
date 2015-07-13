@@ -1,4 +1,4 @@
-import utility
+
 import suspendmetric
 
 class Metric(suspendmetric.suspendmetric):

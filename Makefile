@@ -4,10 +4,10 @@ LIBS+= -lX11
 PULSELIBS=-lpulse-simple
 
 service-install: service-dirs service-files	service-start
-service-reload: service-stop service-files-remove service-files service-start
-user-install: user-dirs user-files user-restart
-user-reload: user-files-remove user-files user-restart
-user-clean: user-files-remove 
+service-reload: service-uninstall service-install
+user-install: user-dirs user-files user-start
+user-reload: user-uninstall user-install
+
 
 screenshot:
 	$(CC) -fpic -shared -I/usr/include/X11 $(LIBS) -DDEBUG user/usermetrics/screenshot.c -o user/usermetrics/screenshot.so
@@ -17,10 +17,10 @@ pasample:
 
 
 service-dirs:
-	mkdir /usr/share/sleepybox
-	mkdir /usr/share/sleepybox/metrics
-	mkdir /etc/sleepybox
-	mkdir /var/log/sleepybox
+	if [ ! -d /usr/share/sleepybox ]; then mkdir /usr/share/sleepybox; fi
+	if [ ! -d /usr/share/sleepybox/metrics ]; then mkdir /usr/share/sleepybox/metrics; fi
+	if [ ! -d /etc/sleepybox ]; then mkdir /etc/sleepybox; fi
+	if [ ! -d /var/log/sleepybox ]; then mkdir /var/log/sleepybox; fi
 
 service-files: 
 	###### system service ######
@@ -39,29 +39,28 @@ service-start:
 	systemctl enable sleepybox.service
 	systemctl --system daemon-reload
 	systemctl start sleepybox.service
-
-service-stop: 
-	-systemctl stop sleepybox.service
-	systemctl disable sleepybox.service
 	
-service-files-remove:
+service-uninstall:
+	# stop the service
+	-systemctl stop sleepybox.service
 	systemctl  disable sleepybox.service
-	rm -f /usr/share/sleepybox/modules/*
-	rm -f /usr/share/sleepybox/*.py
-	rm -f /etc/sleepybox/*
-	rm -f /var/log/sleepybox/*
+	# Remove directories
+	rm -fR /usr/share/sleepybox
+	rm -fR /etc/sleepybox
+	rm -fR /var/log/sleepybox
+	# Remove files	
 	rm -f /lib/systemd/system/sleepybox.service
 	rm -f /etc/dbus-1/system.d/org.lovi9573.sleepybox.conf
 	
-service-dirs-remove:
-	rm -fR /usr/share/sleepybox
-	rm -fR /etc/sleepybox
-	rm -fR /var/log/sleepybox	
 
+
+#
+# User service
+#
 
 user-dirs:
-	mkdir $(USERROOT)  #this prevents each new process from seeing the old one's pid file (its on a different inode)
-	mkdir $(USERROOT)/metrics
+	if [ ! -d $(USERROOT) ]; then mkdir $(USERROOT); fi  #this prevents each new process from seeing the old one's pid file (its on a different inode)
+	if [ ! -d $(USERROOT)/metrics ]; then mkdir $(USERROOT)/metrics; fi
 	if [ ! -d "$(HOME)"/.config/systemd ]; then mkdir "$(HOME)"/.config/systemd; fi
 	if [ ! -d "$(HOME)"/.config/systemd/user ]; then mkdir "$(HOME)"/.config/systemd/user; fi
 
@@ -72,25 +71,21 @@ user-files: screenshot pasample
 	cp user/usermodules.conf $(USERROOT)/modules.conf
 	cp common/*.py $(USERROOT)/
 	cp user/sleepybox.py $(USERROOT)/
+	touch $(USERROOT)/sleepybox.log
 	cp user/usermetrics/*.py $(USERROOT)/metrics/
 	cp user/usermetrics/*.so $(USERROOT)/metrics/
 	cp user/sleepybox-user.service $(HOME)/.config/systemd/user/
 	
-
-user-restart:
+user-start:
 	#python $(USERROOT)/sleepybox.py &
 	systemctl --user enable sleepybox-user.service
 	systemctl --user start sleepybox-user.service
+	systemctl --user daemon-reload 
 
-user-dirs-remove:
-	rm -rf $(USERROOT)
-
-user-files-remove:
+user-uninstall:
+	systemctl --user stop sleepybox-user.service
 	systemctl --user disable sleepybox-user.service
-	rm -rf $(USERROOT)/*.py
-	rm -rf $(USERROOT)/*.pyc
-	rm -rf $(USERROOT)/*.conf
-	rm -rf $(USERROOT)/metrics/*
+	rm -rf $(USERROOT)
 	rm -f $(HOME)/.config/systemd/user/sleepybox-user.service
 
-#TODO: Write systemd --user & to .profile
+

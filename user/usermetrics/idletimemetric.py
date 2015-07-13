@@ -2,7 +2,6 @@
 import suspendmetric
 import ctypes
 import sys
-import utility
 import os
 import subprocess
 
