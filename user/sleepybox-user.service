@@ -7,6 +7,7 @@ After=default.target
 [Service]
 Type=simple
 Environment="PYTHONPATH=/usr/share/sleepybox"
+User=%u
 ExecStart=/usr/bin/python %h/sleepybox/sleepybox.py
 ExecReload=/usr/bin/python %h/sleepybox/sleepybox.py
 
