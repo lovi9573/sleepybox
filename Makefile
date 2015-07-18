@@ -61,8 +61,8 @@ service-uninstall:
 user-dirs:
 	if [ ! -d $(USERROOT) ]; then mkdir $(USERROOT); fi  #this prevents each new process from seeing the old one's pid file (its on a different inode)
 	if [ ! -d $(USERROOT)/metrics ]; then mkdir $(USERROOT)/metrics; fi
-	if [ ! -d "$(HOME)"/.config/systemd ]; then mkdir "$(HOME)"/.config/systemd; fi
-	if [ ! -d "$(HOME)"/.config/systemd/user ]; then mkdir "$(HOME)"/.config/systemd/user; fi
+	#if [ ! -d "$(HOME)"/.config/systemd ]; then mkdir "$(HOME)"/.config/systemd; fi
+	#if [ ! -d "$(HOME)"/.config/systemd/user ]; then mkdir "$(HOME)"/.config/systemd/user; fi
 
 user-files: screenshot pasample
 	python setup.py
@@ -74,17 +74,17 @@ user-files: screenshot pasample
 	touch $(USERROOT)/sleepybox.log
 	cp user/usermetrics/*.py $(USERROOT)/metrics/
 	cp user/usermetrics/*.so $(USERROOT)/metrics/
-	cp user/sleepybox-user.service $(HOME)/.config/systemd/user/
+	#cp user/sleepybox-user.service $(HOME)/.config/systemd/user/
 	
 user-start:
 	#python $(USERROOT)/sleepybox.py &
-	systemctl --user enable sleepybox-user.service
-	systemctl --user start sleepybox-user.service
-	systemctl --user daemon-reload 
+	#systemctl --user enable sleepybox-user.service
+	#systemctl --user start sleepybox-user.service
+	#systemctl --user daemon-reload 
 
 user-uninstall:
-	systemctl --user stop sleepybox-user.service
-	systemctl --user disable sleepybox-user.service
+	#systemctl --user stop sleepybox-user.service
+	#systemctl --user disable sleepybox-user.service
 	rm -rf $(USERROOT)
 	rm -f $(HOME)/.config/systemd/user/sleepybox-user.service
 

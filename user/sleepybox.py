@@ -12,14 +12,19 @@ import sys
 from subprocess import call
 import getpass
 import traceback
+import daemon
+#import lockfile
+from pidfile import PidFile
+import signal
 
 HOME = os.getenv('HOME')
+DAEMON_ROOT = join(HOME,'sleepybox')
 USERLOGFILE=join(HOME,'sleepybox/sleepybox.log')
 USERERRFILE=join(HOME,'sleepybox/error.log')
 CONFIGFILE=join('/etc/sleepybox/sleepybox.conf')
 CUTOFFSFILE=join(HOME,'sleepybox/modules.conf')
 METRICSPATH = join(HOME,'sleepybox/metrics')
-PIDFILE = join(HOME,'sleepybox/pid')
+PIDFILE = join(HOME,'sleepybox/sleepybox.pid')
 
 SLEEP=1
 SCREENOFF=2
@@ -104,6 +109,17 @@ class SleepyBoxUserService(dbus.service.Object):
 
 
 if __name__ == "__main__":
+    context = daemon.DaemonContext(working_directory=DAEMON_ROOT,
+                                   pidfile=PidFile(PIDFILE))
+    
+    #context.signal_map = { signal.SIGTERM: program_cleanup,
+    #                       signal.SIGHUP: 'terminate' }
+    
+    #logfile = open(USERLOGFILE,'w')
+    #context.files_preserve = [logfile]
+    
+       
+    """
     if os.path.isfile(PIDFILE):
         pid = -1
         with open(PIDFILE,"r") as fin:
@@ -115,13 +131,16 @@ if __name__ == "__main__":
                 fout.write("[{}] Stale PID file found. Existing sleepybox service not stopped. \n".format(datetime.datetime.now().__str__() ))
     with open(PIDFILE,'w') as fout:
         fout.write(str(os.getpid()));
+    """
+    print HOME,DAEMON_ROOT
     with open(USERLOGFILE,'w') as fout:
         fout.write("[{}] Starting sleepybox service user daemon \n".format(datetime.datetime.now().__str__() ))
-    DBusGMainLoop(set_as_default=True)
-    myservice = SleepyBoxUserService()
-    gobject.threads_init()
-    #while(True):
-        #TODO: put in a 'real' idle loop.
-        #time.sleep(120)   
-    loop = gobject.MainLoop()
-    loop.run()
+    with context:
+        DBusGMainLoop(set_as_default=True)
+        myservice = SleepyBoxUserService()
+        gobject.threads_init()
+        #while(True):
+            #TODO: put in a 'real' idle loop.
+            #time.sleep(120)   
+        loop = gobject.MainLoop()
+        loop.run()

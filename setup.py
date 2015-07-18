@@ -151,10 +151,11 @@ if __name__ == "__main__":
     found = False
     with open(os.path.join(os.getenv("HOME", ""),".bash_profile"), "r") as fin:
         for line in fin:
-            match = re.search("systemd --user &", line)
+            match = re.search("python $HOME/sleepybox/sleepybox.py &", line)
+            #match = re.search("systemd --user &", line)
             if match:
                 found = True
     if not found:
         with open(os.path.join(os.getenv("HOME", ""),".bash_profile"), "a") as fout:
-            fout.write("# Start the systemd user daemon to at least manage sleepybox\n")
-            fout.write("systemd --user &\n")
+            fout.write("# Start the sleepybox user daemon\n")
+            fout.write("python $HOME/sleepybox/sleepybox.py &\n")

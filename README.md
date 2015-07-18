@@ -13,6 +13,7 @@ pulseaudio-libs-devel
 python PIL
 python ctypes
 libXss
+python-daemon
 
 Installation
 ------------
