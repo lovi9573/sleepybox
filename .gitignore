@@ -5,4 +5,5 @@ modules.conf
 usermodules.conf
 sleepybox.conf
 *~
-
+diffimage
+user/*.conf

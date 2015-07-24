@@ -1,0 +1,8 @@
+
+[model]
+screenfile	naivebayes_screen_model
+sleepfile	naivebayes_sleep_model
+history		5
+minsleeptime	240
+minscreentime	240
+

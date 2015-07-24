@@ -10,7 +10,7 @@ import os
 from os.path import expanduser
 import re
 
-CONFIG_FILE = "user/usermodules.conf"
+CONFIG_FILE = "user/modules.conf"
 
 def getNetworkInterfaces():
     #Get network interface names and addresses

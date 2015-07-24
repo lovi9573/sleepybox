@@ -9,7 +9,7 @@ import StringIO
 from ctypes import *
 
 
-        
+     
 
 class Metric(suspendmetric.suspendmetric):
     

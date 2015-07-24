@@ -1,0 +1,3 @@
+
+#Which evaluator to use in determining the action to take.
+EVALUATOR	DecayingAverageCutScore

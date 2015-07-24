@@ -12,7 +12,7 @@ import logging
 import traceback
 from subprocess import call
 
-LOGFILE='/var/log/sleepybox/sleepybox.log'
+LOGFILE='/var/log/sleepybox/sleepybox.'+datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")+'.log'
 ERRORLOG='/var/log/sleepybox/error.log'
 CONFIGFILE='/etc/sleepybox/sleepybox.conf'
 CUTOFFSFILE='/etc/sleepybox/modules.conf'
@@ -42,6 +42,7 @@ class SleepyBoxService(dbus.service.Object):
         logger.addHandler(fh)
         self.vetos = False
         self.responses = 0
+        self.fallasleeptime = datetime.datetime.now()
         self.config = getConfig(CONFIGFILE)
         self.cutoffs = getModuleConfig(CUTOFFSFILE)
         self.modules = {}
@@ -54,11 +55,19 @@ class SleepyBoxService(dbus.service.Object):
                 logging.exception(e)
                 with open(LOGFILE,"a") as fout:
                    fout.write("{} unable to load: {}\n".format(modulename,traceback.format_exc())) 
+        #Power manager system interface
         bus=dbus.SystemBus()   
         #powerproxy = bus.get_object('org.freedesktop.UPower', "/org/freedesktop/UPower",False) 
         powerproxy = bus.get_object('org.freedesktop.login1', "/org/freedesktop/login1",False) 
         #self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.UPower")           
-        self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.login1.Manager")           
+        self.powerIface = dbus.Interface(powerproxy,"org.freedesktop.login1.Manager")   
+        bus.add_signal_receiver( self.recordSleep,            # name of callback function
+                                 'PrepareForSleep',                        # singal name
+                                 'org.freedesktop.login1.Manager',          # interface
+                                 'org.freedesktop.login1'           # bus name
+                                 )
+        
+        #This service's interface        
         bus_name = dbus.service.BusName('org.lovi9573.sleepyboxservice', bus=bus)
         dbus.service.Object.__init__(self, bus_name, '/org/lovi9573/sleepyboxservice')
         self.timer = PerpetualTimer(threading.Event(),int(self.config.get("POLLTIME",120)),self.check)
@@ -149,6 +158,19 @@ class SleepyBoxService(dbus.service.Object):
         self.vetos = False
         self.responses = 0
    
+    def recordSleep(self,sleeping):
+        with open(LOGFILE,"a") as fout:
+            if sleeping:
+                fout.write("[{}] Sleeping \n".format(datetime.datetime.now().__str__() ))
+                self.fallasleeptime = datetime.datetime.now()
+            else:
+                fout.write("[{}] Waking \n".format(datetime.datetime.now().__str__() ))
+                secondsslept =  (datetime.datetime.now() - self.fallasleeptime).total_seconds()
+                self.signalsleeptime(secondsslept)
+     
+    @dbus.service.signal(dbus_interface='org.lovi9573.sleepyboxservice',signature='i')            
+    def signalsleeptime(self,time):
+        pass
 
 
 if __name__ == "__main__":

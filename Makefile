@@ -3,10 +3,9 @@ LIBS=-lImlib2
 LIBS+= -lX11
 PULSELIBS=-lpulse-simple
 
-service-install: service-dirs service-files	service-start
-service-reload: service-uninstall service-install
-user-install: user-dirs user-files user-start
-user-reload: user-uninstall user-install
+service-install: service-dirs service-files	
+user-install: user-dirs user-files 
+
 
 
 screenshot:
@@ -65,19 +64,23 @@ user-dirs:
 	#if [ ! -d "$(HOME)"/.config/systemd/user ]; then mkdir "$(HOME)"/.config/systemd/user; fi
 
 user-files: screenshot pasample
+	#cd user; for f in *.example do; cp f 
 	python setup.py
 	###### user service ######
 	#cp sleepybox.conf $(USERROOT)
-	cp user/usermodules.conf $(USERROOT)/modules.conf
+	#cp user/usermodules.conf $(USERROOT)/modules.conf
 	cp common/*.py $(USERROOT)/
 	cp user/sleepybox.py $(USERROOT)/
 	touch $(USERROOT)/sleepybox.log
 	cp user/usermetrics/*.py $(USERROOT)/metrics/
 	cp user/usermetrics/*.so $(USERROOT)/metrics/
+	cp -r user/evaluators $(USERROOT)/
+	cp user/*.conf $(USERROOT)/
+	cp user/*.conf.example $(USERROOT)/
 	#cp user/sleepybox-user.service $(HOME)/.config/systemd/user/
 	
 user-start:
-	#python $(USERROOT)/sleepybox.py &
+	python $(USERROOT)/sleepybox.py &
 	#systemctl --user enable sleepybox-user.service
 	#systemctl --user start sleepybox-user.service
 	#systemctl --user daemon-reload 
