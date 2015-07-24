@@ -3,9 +3,12 @@ LIBS=-lImlib2
 LIBS+= -lX11
 PULSELIBS=-lpulse-simple
 
+
+
+
 service-install: service-dirs service-files	
 user-install: user-dirs user-files 
-
+clean: user-clean system-clean
 
 
 screenshot:
@@ -13,6 +16,11 @@ screenshot:
 	
 pasample:
 	$(CC) -fpic -shared -I/usr/include/pulse $(PULSELIBS) user/usermetrics/pulseaudiosample.c -o user/usermetrics/pasample.so
+
+configs:
+	./create-configs.sh
+	
+
 
 
 service-dirs:
@@ -32,7 +40,7 @@ service-files:
 	cp system/modules.conf /etc/sleepybox
 	#cp sleepybox.service.evn /etc/sysconfig/sleepybox
 	cp system/sleepybox.service /lib/systemd/system/
-	cp system/org.lovi9573.sleepybox.conf /etc/dbus-1/system.d/
+	cp system/org.lovi9573.sleepybox.config /etc/dbus-1/system.d/org.lovi9573.sleepybox.conf
 
 service-start:
 	systemctl enable sleepybox.service
@@ -51,7 +59,9 @@ service-uninstall:
 	rm -f /lib/systemd/system/sleepybox.service
 	rm -f /etc/dbus-1/system.d/org.lovi9573.sleepybox.conf
 	
-
+system-clean:
+	cd system; rm *.conf
+	cd system/metrics; rm *.pyc
 
 #
 # User service
@@ -89,6 +99,12 @@ user-uninstall:
 	#systemctl --user stop sleepybox-user.service
 	#systemctl --user disable sleepybox-user.service
 	rm -rf $(USERROOT)
-	rm -f $(HOME)/.config/systemd/user/sleepybox-user.service
+	#rm -f $(HOME)/.config/systemd/user/sleepybox-user.service
+
+user-clean:
+	-cd user/usermetrics; rm *.so
+	-cd user; rm *.conf
+	-cd user/usermetrics; rm *.pyc
+	-cd user/evaluators; rm *.pyc
 
 
