@@ -81,7 +81,7 @@ user-files: screenshot pasample
 	#cp user/usermodules.conf $(USERROOT)/modules.conf
 	cp common/*.py $(USERROOT)/
 	cp user/sleepybox.py $(USERROOT)/
-	touch $(USERROOT)/sleepybox.log
+	#touch $(USERROOT)/sleepybox.log
 	cp user/usermetrics/*.py $(USERROOT)/metrics/
 	cp user/usermetrics/*.so $(USERROOT)/metrics/
 	cp -r user/evaluators $(USERROOT)/

@@ -93,7 +93,7 @@ class SleepyBoxUserService(dbus.service.Object):
                     self.serviceIface.accept(getpass.getuser())
                 else:
                     self.serviceIface.veto(getpass.getuser())
-                if screenoff:
+                if evaluation.get('screenoff',False):
                     self.doScreenOff()
             elif t == SCREENOFF:
                 if evaluation.get('screenoff',False):
