@@ -88,16 +88,19 @@ class SleepyBoxUserService(dbus.service.Object):
                     fout.write("{}\n".format(str(e)))
                     del self.modules[modulename]
             evaluation = self.evaluator.eval(metrics)
-            if t == SLEEP:
-                if evaluation.get('sleep',False):
-                    self.serviceIface.accept(getpass.getuser())
-                else:
-                    self.serviceIface.veto(getpass.getuser())
-                if screenoff:
-                    self.doScreenOff()
-            elif t == SCREENOFF:
-                if evaluation.get('screenoff',False):
-                    self.doScreenOff()
+            if evaluation.get("error",None):
+                fout.write(evaluation.get("error",""))
+            else:
+                if t == SLEEP:
+                    if evaluation.get('sleep',False):
+                        self.serviceIface.accept(getpass.getuser())
+                    else:
+                        self.serviceIface.veto(getpass.getuser())
+                    if evaluation.get('screenoff',False):
+                        self.doScreenOff()
+                elif t == SCREENOFF:
+                    if evaluation.get('screenoff',False):
+                        self.doScreenOff()
         
 
    

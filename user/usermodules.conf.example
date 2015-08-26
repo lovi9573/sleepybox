@@ -11,6 +11,11 @@
 #Module Specific keys:
 #	Some modules will have specific key-values for their operation.  Consult the module documentation
 
+[timeofdaymetric]
+suspend 	25
+screen		25
+new_weight	1.0
+when 		below
 
 [idletimemetric]
 suspend		120

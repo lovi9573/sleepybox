@@ -11,7 +11,7 @@ class EvaluatorBase(object):
         pass
     
     def eval(self, metrics):
-        pass
+	return None        
     
     def update(self, timeslept):
         pass
