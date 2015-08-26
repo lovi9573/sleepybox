@@ -1,9 +1,9 @@
 *.pyc
 .*
 *.so
-modules.conf
+system/odules.conf
 usermodules.conf
-sleepybox.conf
+system/sleepybox.conf
 *~
 diffimage
 user/*.conf
